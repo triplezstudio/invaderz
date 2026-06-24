@@ -10,11 +10,12 @@ int main(int /*argc*/, char * /*argv*/[])
   raw.setLevel(invaderz::log::Severity::DEBUG);
   invaderz::log::Locator::provide(&raw);
 
-  invaderz::App app;
+  invaderz::App app(640, 480);
 
-  while (true)
+  bool running = true;
+  while (running)
   {
-    app.render();
+    running = app.doFrame();
   }
 
   return EXIT_SUCCESS;
