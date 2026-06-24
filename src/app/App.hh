@@ -16,7 +16,10 @@ class App : public runtime::CoreObject, public IRenderer
 
   auto pollEvents() -> EventData;
 
+  void clear();
   void render();
+
+  void renderRectangle(const Eigen::Vector3f &position, const Eigen::Vector3f &dims) override;
 
   private:
   SDL_Window *m_window{nullptr};

@@ -27,4 +27,5 @@ target_link_libraries (app_lib PUBLIC
 	invaderz-interface-library
 	runtime_lib
 	SDL3::SDL3
+	Eigen3::Eigen
 	)

@@ -32,11 +32,27 @@ auto App::pollEvents() -> EventData
   return data;
 }
 
+void App::clear()
+{
+  SDL_SetRenderDrawColor(m_renderer, 32, 32, 32, 255);
+  SDL_RenderClear(m_renderer);
+}
+
 void App::render()
 {
-  SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
-  SDL_RenderClear(m_renderer);
   SDL_RenderPresent(m_renderer);
+}
+
+void App::renderRectangle(const Eigen::Vector3f &position, const Eigen::Vector3f &dims)
+{
+  SDL_SetRenderDrawColor(m_renderer, 168, 119, 50, 255);
+  SDL_FRect rect{
+    .x = position(0),
+    .y = position(1),
+    .w = dims(0),
+    .h = dims(1),
+  };
+  SDL_RenderFillRect(m_renderer, &rect);
 }
 
 void App::initializeSdl(const int width, const int height)

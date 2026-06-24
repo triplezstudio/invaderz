@@ -15,6 +15,8 @@ set (CMAKE_VERBOSE_MAKEFILE OFF)
 
 set (CMAKE_BUILD_RPATH_USE_ORIGIN true)
 
+find_package(Eigen3 CONFIG REQUIRED)
+
 add_library (invaderz-interface-library INTERFACE)
 target_compile_options (invaderz-interface-library INTERFACE
 		$<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>

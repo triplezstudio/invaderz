@@ -16,6 +16,10 @@ bool quitRequested(const EventData &data)
     {
       return true;
     }
+    if (event.type == SDL_EVENT_KEY_UP && event.key.key == SDLK_ESCAPE)
+    {
+      return true;
+    }
   }
 
   return false;
@@ -27,6 +31,13 @@ bool Game::update(const EventData &data)
   return !quitRequested(data);
 }
 
-void Game::render(IRenderer & /*renderer*/) {}
+namespace {
+const Eigen::Vector3f PLAYER_DIMS(32.0f, 32.0f, 0.0f);
+}
+
+void Game::render(IRenderer &renderer)
+{
+  renderer.renderRectangle(m_playerPosition, PLAYER_DIMS);
+}
 
 } // namespace invaderz

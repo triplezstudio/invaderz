@@ -15,4 +15,5 @@ target_link_libraries (invaderz_game_lib
 	invaderz-interface-library
 	runtime_lib
 	app_lib
+	Eigen3::Eigen
 	)
