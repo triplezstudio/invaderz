@@ -2,6 +2,8 @@
 #pragma once
 
 #include "CoreObject.hh"
+#include "EventData.hh"
+#include "IRenderer.hh"
 
 namespace invaderz {
 
@@ -11,7 +13,8 @@ class Game : public runtime::CoreObject
   Game();
   ~Game() override = default;
 
-  void update();
+  bool update(const EventData &data);
+  void render(IRenderer &renderer);
 };
 
 } // namespace invaderz

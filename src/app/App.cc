@@ -18,12 +18,25 @@ App::~App()
   SDL_Quit();
 }
 
-bool App::doFrame()
+auto App::pollEvents() -> EventData
 {
-  auto exit = processInput();
-  render();
+  EventData data{};
 
-  return exit;
+  SDL_Event event{};
+
+  while (SDL_PollEvent(&event))
+  {
+    data.events.push_back(event);
+  }
+
+  return data;
+}
+
+void App::render()
+{
+  SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
+  SDL_RenderClear(m_renderer);
+  SDL_RenderPresent(m_renderer);
 }
 
 void App::initializeSdl(const int width, const int height)
@@ -37,28 +50,6 @@ void App::initializeSdl(const int width, const int height)
   {
     error("Failed to initialize window/renderer", std::string(SDL_GetError()));
   }
-}
-
-bool App::processInput()
-{
-  SDL_Event event{};
-
-  while (SDL_PollEvent(&event))
-  {
-    if (event.type == SDL_EVENT_QUIT)
-    {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-void App::render()
-{
-  SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
-  SDL_RenderClear(m_renderer);
-  SDL_RenderPresent(m_renderer);
 }
 
 } // namespace invaderz

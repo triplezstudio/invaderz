@@ -14,4 +14,5 @@ target_sources (invaderz_game_lib PRIVATE
 target_link_libraries (invaderz_game_lib
 	invaderz-interface-library
 	runtime_lib
+	app_lib
 	)
