@@ -1,10 +1,17 @@
 
+
 add_executable (invaderz)
 
-target_sources(invaderz PRIVATE main.cc)
+add_subdirectory(
+	${CMAKE_CURRENT_SOURCE_DIR}/lib
+	)
+
+target_sources (invaderz PRIVATE
+	main.cc)
 
 target_link_libraries (invaderz PUBLIC
 	invaderz-interface-library
-    app_lib
+	invaderz_game_lib
+	app_lib
 	)
 
