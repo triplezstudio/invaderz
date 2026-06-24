@@ -4,7 +4,7 @@
 #include "ILogger.hh"
 #include <mutex>
 
-namespace swarms::log {
+namespace invaderz::log {
 
 class StdLogger : public ILogger
 {
@@ -37,4 +37,4 @@ class StdLogger : public ILogger
                 const std::optional<std::string> &cause) const;
 };
 
-} // namespace swarms::log
+} // namespace invaderz::log

@@ -3,7 +3,7 @@
 
 #include "ILogger.hh"
 
-namespace swarms::log {
+namespace invaderz::log {
 
 class NullLogger : public ILogger
 {
@@ -23,4 +23,4 @@ class NullLogger : public ILogger
              const std::optional<std::string> &cause = {}) const override;
 };
 
-} // namespace swarms::log
+} // namespace invaderz::log

@@ -3,7 +3,7 @@
 
 #include "ILogger.hh"
 
-namespace swarms::log {
+namespace invaderz::log {
 
 /// @brief - Convenience logging class allowing to configure the logger
 /// independently from the core logger provided by the locator pattern.
@@ -49,4 +49,4 @@ class PrefixedLogger
   std::string m_modules{};
 };
 
-} // namespace swarms::log
+} // namespace invaderz::log

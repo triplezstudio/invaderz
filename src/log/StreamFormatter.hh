@@ -5,7 +5,7 @@
 #include <ostream>
 #include <string>
 
-namespace swarms::log {
+namespace invaderz::log {
 
 enum class Color
 {
@@ -22,4 +22,4 @@ void setStreamColorFromSeverity(std::ostream &stream, const Severity severity);
 void setStreamColor(std::ostream &stream, const Color &color);
 void clearStreamFormat(std::ostream &stream);
 
-} // namespace swarms::log
+} // namespace invaderz::log

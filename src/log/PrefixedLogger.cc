@@ -2,7 +2,7 @@
 #include "PrefixedLogger.hh"
 #include "Locator.hh"
 
-namespace swarms::log {
+namespace invaderz::log {
 namespace {
 auto consolidate(const std::string &str) -> std::string
 {
@@ -72,4 +72,4 @@ void PrefixedLogger::error(const std::string_view message,
   Locator::getLogger().error(m_modules, message, cause);
 }
 
-} // namespace swarms::log
+} // namespace invaderz::log

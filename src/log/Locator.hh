@@ -4,7 +4,7 @@
 #include "ILogger.hh"
 #include <string>
 
-namespace swarms::log {
+namespace invaderz::log {
 
 class Locator
 {
@@ -19,4 +19,4 @@ class Locator
   static ILogger *m_logger;
 };
 
-} // namespace swarms::log
+} // namespace invaderz::log

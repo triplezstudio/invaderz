@@ -7,7 +7,7 @@
 #include <functional>
 #include <string>
 
-namespace swarms::runtime {
+namespace invaderz::runtime {
 
 class CoreObject
 {
@@ -52,4 +52,4 @@ class CoreObject
   log::PrefixedLogger m_logger;
 };
 
-} // namespace swarms::runtime
+} // namespace invaderz::runtime

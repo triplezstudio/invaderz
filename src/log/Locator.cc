@@ -2,7 +2,7 @@
 #include "Locator.hh"
 #include "NullLogger.hh"
 
-namespace swarms::log {
+namespace invaderz::log {
 
 NullLogger NULL_LOGGER{};
 ILogger *Locator::m_logger{nullptr};
@@ -29,4 +29,4 @@ void Locator::provide(ILogger *logger)
   }
 }
 
-} // namespace swarms::log
+} // namespace invaderz::log

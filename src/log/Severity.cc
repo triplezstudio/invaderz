@@ -1,7 +1,7 @@
 
 #include "Severity.hh"
 
-namespace swarms::log {
+namespace invaderz::log {
 
 auto fromStr(const std::string &severity) noexcept -> Severity
 {
@@ -52,4 +52,4 @@ auto str(const Severity severity) -> std::string
   }
 }
 
-} // namespace swarms::log
+} // namespace invaderz::log

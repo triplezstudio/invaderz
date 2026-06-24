@@ -4,7 +4,7 @@
 #include <execinfo.h>
 #include <vector>
 
-namespace swarms::runtime {
+namespace invaderz::runtime {
 namespace {
 constexpr auto MAX_STACK_TRACE_DEPTH = 32u;
 
@@ -56,4 +56,4 @@ auto CoreException::what() const throw() -> const char *
   return m_message.c_str();
 }
 
-} // namespace swarms::runtime
+} // namespace invaderz::runtime

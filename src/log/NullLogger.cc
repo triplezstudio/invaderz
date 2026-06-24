@@ -1,7 +1,7 @@
 
 #include "NullLogger.hh"
 
-namespace swarms::log {
+namespace invaderz::log {
 
 void NullLogger::setAllowLog(const bool /*allowLog*/)
 {
@@ -47,4 +47,4 @@ void NullLogger::error(const std::string_view /*module*/,
   // Intentionally empty
 }
 
-} // namespace swarms::log
+} // namespace invaderz::log

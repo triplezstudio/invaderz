@@ -3,7 +3,7 @@
 #include "Locator.hh"
 #include "SafetyNet.hh"
 
-namespace swarms::runtime {
+namespace invaderz::runtime {
 
 CoreObject::CoreObject(const std::string &module)
   : m_logger(module)
@@ -54,4 +54,4 @@ void CoreObject::addModule(const std::string &module)
   m_logger.addModule(module);
 }
 
-} // namespace swarms::runtime
+} // namespace invaderz::runtime

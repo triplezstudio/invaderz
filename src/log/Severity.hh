@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace swarms::log {
+namespace invaderz::log {
 
 enum class Severity
 {
@@ -18,4 +18,4 @@ enum class Severity
 auto fromStr(const std::string &severity) noexcept -> Severity;
 auto str(const Severity severity) -> std::string;
 
-} // namespace swarms::log
+} // namespace invaderz::log

@@ -5,7 +5,7 @@
 #include <optional>
 #include <string>
 
-namespace swarms::log {
+namespace invaderz::log {
 
 class ILogger
 {
@@ -30,4 +30,4 @@ class ILogger
     = 0;
 };
 
-} // namespace swarms::log
+} // namespace invaderz::log

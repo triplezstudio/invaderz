@@ -3,7 +3,7 @@
 #include "CoreException.hh"
 #include "Locator.hh"
 
-namespace swarms::runtime {
+namespace invaderz::runtime {
 
 bool launchProtected(std::function<void(void)> func,
                      const std::string_view module,
@@ -63,4 +63,4 @@ bool launchProtected(std::function<void(void)> func,
   return false;
 }
 
-} // namespace swarms::runtime
+} // namespace invaderz::runtime

@@ -6,7 +6,7 @@
 #include <functional>
 #include <string>
 
-namespace swarms::runtime {
+namespace invaderz::runtime {
 
 /// @brief - Executes the function provided as input and catches all exceptions
 /// that might occur, logging an error when this happens. The log message includes
@@ -36,4 +36,4 @@ bool launchProtected(std::function<void(void)> func,
                      const std::string &functionName,
                      const log::PrefixedLogger &logger);
 
-} // namespace swarms::runtime
+} // namespace invaderz::runtime

@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace swarms::runtime {
+namespace invaderz::runtime {
 
 class CoreException : public std::exception
 {
@@ -39,4 +39,4 @@ class CoreException : public std::exception
   std::string m_message{};
 };
 
-} // namespace swarms::runtime
+} // namespace invaderz::runtime

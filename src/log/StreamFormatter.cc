@@ -2,7 +2,7 @@
 #include "StreamFormatter.hh"
 #include "Severity.hh"
 
-namespace swarms::log {
+namespace invaderz::log {
 namespace {
 constexpr auto STREAM_FORMAT_CLEAR = "\033[0m";
 
@@ -72,4 +72,4 @@ void clearStreamFormat(std::ostream &stream)
   stream << STREAM_FORMAT_CLEAR;
 }
 
-} // namespace swarms::log
+} // namespace invaderz::log

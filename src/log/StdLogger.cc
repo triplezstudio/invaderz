@@ -5,7 +5,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace swarms::log {
+namespace invaderz::log {
 
 void StdLogger::setAllowLog(const bool allowLog)
 {
@@ -102,4 +102,4 @@ void StdLogger::logTrace(const Severity severity,
   std::cout << out.str() << std::endl;
 }
 
-} // namespace swarms::log
+} // namespace invaderz::log
