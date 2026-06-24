@@ -2,4 +2,4 @@
 
 # What is this project about?
 
-This project aims at experimenting with multiagents based simulation and turn it into a game.
+This project aims at creating a small clone of the famouns [Space Invaders](https://en.wikipedia.org/wiki/Space_Invaders) game.
