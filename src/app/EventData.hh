@@ -9,6 +9,8 @@ namespace invaderz {
 struct EventData
 {
   std::vector<SDL_Event> events{};
+
+  bool quitRequested() const;
 };
 
 } // namespace invaderz

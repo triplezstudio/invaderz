@@ -21,6 +21,7 @@ target_include_directories (app_lib PUBLIC
 
 target_sources (app_lib PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/App.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/EventData.cc
 	)
 
 target_link_libraries (app_lib PUBLIC
