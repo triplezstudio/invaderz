@@ -11,14 +11,17 @@ namespace invaderz {
 class Game : public runtime::CoreObject
 {
   public:
-  Game();
+  Game(const Eigen::Vector3f &worldDims);
   ~Game() override = default;
 
   bool update(const EventData &data);
   void render(IRenderer &renderer);
 
   private:
+  Eigen::Vector3f m_worldDims{Eigen::Vector3f::Zero()};
   Eigen::Vector3f m_playerPosition{Eigen::Vector3f::Zero()};
+
+  void initialize();
 };
 
 } // namespace invaderz

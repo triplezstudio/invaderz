@@ -11,8 +11,11 @@ int main(int /*argc*/, char * /*argv*/[])
   raw.setLevel(invaderz::log::Severity::DEBUG);
   invaderz::log::Locator::provide(&raw);
 
-  invaderz::Game game;
-  invaderz::App app(640, 480);
+  constexpr auto width  = 480;
+  constexpr auto height = 880;
+
+  invaderz::Game game(Eigen::Vector3f(1.0f * width, 1.0f * height, 0.0f));
+  invaderz::App app(width, height);
 
   bool running = true;
   while (running)
