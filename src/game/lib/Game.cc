@@ -1,5 +1,6 @@
 
 #include "Game.hh"
+#include "IAudio.hh"
 
 namespace invaderz {
 
@@ -47,6 +48,7 @@ auto collectMotion(const EventData &data) -> Eigen::Vector3f
 
 bool Game::update(const EventData &data)
 {
+
   auto motion = collectMotion(data);
   m_playerPosition += motion;
   if (m_playerPosition(0) < 0.0f)
@@ -73,6 +75,19 @@ void Game::initialize()
   m_playerPosition = Eigen::Vector3f(0.0f, m_worldDims(1) - PLAYER_DIMS(1), 0.0f);
   info("player pos " + std::to_string(m_playerPosition(0)) + "x"
        + std::to_string(m_playerPosition(1)) + "x" + std::to_string(m_playerPosition(2)));
+}
+void Game::processSound(IAudio &audio)
+{
+  static bool initial = true;
+  if (initial)
+  {
+    initial = false;
+    mainTheme = audio.loadWavFile("E:/Sound/cyberpunky_theme.wav");
+    audio.playSound(mainTheme.get(), 1.5);
+  }
+
+
+
 }
 
 } // namespace invaderz

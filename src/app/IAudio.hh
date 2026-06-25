@@ -9,8 +9,9 @@
 
 struct WaveData
 {
-  SDL_AudioSpec spec;
   SDL_AudioStream *stream = NULL;
+  uint8_t* data = nullptr;
+  uint32_t lengthInBytes = 0;
 };
 
 class IAudio
@@ -19,7 +20,8 @@ class IAudio
   IAudio() = default;
   virtual ~IAudio() = default;
 
-  virtual std::unique_ptr<WaveData> loadWavFile(const std::string& filePath);
+  virtual std::unique_ptr<WaveData> loadWavFile(const std::string& filePath) = 0;
+  virtual void playSound(WaveData* waveData, float volume) = 0;
 };
 
 #endif //INVADERZ_IAUDIO_H

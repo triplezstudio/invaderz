@@ -13,7 +13,7 @@ App::App(const int width, const int height)
 
 App::~App()
 {
-  SDL_CloseAudioDevice(dev);
+  SDL_CloseAudioDevice(audioDeviceId);
   // TODO destroy loaded audio streams
 
   SDL_DestroyRenderer(m_renderer);
@@ -31,6 +31,19 @@ auto App::pollEvents() -> EventData
   {
     data.events.push_back(event);
   }
+
+  // Update all of our playing sounds as well
+  for (auto waveData : currentlyPlayingSounds) {
+    if (SDL_GetAudioStreamQueued(waveData->stream) < ((int) waveData->lengthInBytes)) {
+      SDL_PutAudioStreamData(waveData->stream, waveData->data, (int) waveData->lengthInBytes);
+    }
+    else {
+      // TODO: remove a "finished" sound from our currently playing list?
+      // TODO: handle "looping"
+    }
+  }
+
+
 
   return data;
 }
@@ -78,21 +91,21 @@ void App::initializeSdl(const int width, const int height)
   want.channels = 2;
   want.freq = 48000;
 
-  dev = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &want);
-  if (dev == 0) {
+  audioDeviceId = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &want);
+  if (audioDeviceId == 0) {
     error("Failed to open audio: %s", SDL_GetError());
   } else {
-
+    info(std::string("Bound to audio device ")+ SDL_GetAudioDeviceName(audioDeviceId));
   }
 
 }
 std::unique_ptr<WaveData> App::loadWavFile(const std::string &filePath)
 {
   SDL_AudioSpec spec;
-  uint8_t *wav_data = NULL;
-  uint32_t wav_data_len = 0;
+  uint8_t *wavData      = NULL;
+  uint32_t wavDataLength = 0;
 
-  if (!SDL_LoadWAV(filePath.c_str(), &spec, &wav_data, &wav_data_len)) {
+  if (!SDL_LoadWAV(filePath.c_str(), &spec, &wavData, &wavDataLength)) {
     error("Couldn't load .wav file: %s", SDL_GetError());
   }
 
@@ -104,8 +117,16 @@ std::unique_ptr<WaveData> App::loadWavFile(const std::string &filePath)
 
   WaveData wd= {};
   wd.stream = stream;
+  wd.data = wavData;
+  wd.lengthInBytes = wavDataLength;
   return std::make_unique<WaveData>(wd);
 
+}
+void App::playSound(WaveData* waveData, float volume)
+{
+  SDL_BindAudioStream(audioDeviceId, waveData->stream);
+  SDL_SetAudioStreamGain(waveData->stream, volume);
+  currentlyPlayingSounds.push_back(waveData);
 }
 
 } // namespace invaderz
