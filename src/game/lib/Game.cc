@@ -1,6 +1,7 @@
 
 #include "Game.hh"
 #include "IAudio.hh"
+#include <cstdlib>
 
 namespace invaderz {
 
@@ -82,7 +83,8 @@ void Game::processSound(IAudio &audio)
   if (initial)
   {
     initial = false;
-    mainTheme = audio.loadWavFile("E:/Sound/cyberpunky_theme.wav");
+    auto assetFolder = std::string(std::getenv("ASSET_FOLDER"));
+    mainTheme = audio.loadWavFile(assetFolder + "/cyberpunky_theme.wav");
     audio.playSound(mainTheme.get(), 1.5);
   }
 
