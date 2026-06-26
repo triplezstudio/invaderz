@@ -82,7 +82,16 @@ auto resolveStackTraceSymbols(std::vector<void*>& addresses) -> std::vector<std:
 
 #elif defined __linux__
 
-    return backtrace_symbols(addresses.data(), addresses.size());
+  auto symbolArray = backtrace_symbols(addresses.data(), addresses.size());
+  std::vector<std::string> symbolVector;
+
+  for (char** p = symbolArray; *p != nullptr; ++p)
+  {
+    symbolVector.emplace_back(*p);
+  }
+  free(symbolArray);
+
+  return symbolVector;
 
 #endif
 }
@@ -102,11 +111,6 @@ auto retrieveStackTrace() -> std::string
     stackTrace += funcs[i];
     stackTrace += "\n";
   }
-
-#ifdef __linux__
-  // https://man7.org/linux/man-pages/man3/backtrace.3.html
-  free(funcs);
-#endif
 
   return stackTrace;
 }

@@ -83,9 +83,13 @@ void Game::processSound(IAudio &audio)
   if (initial)
   {
     initial = false;
-    auto assetFolder = std::string(std::getenv("ASSET_FOLDER"));
-    mainTheme = audio.loadWavFile(assetFolder + "/cyberpunky_theme.wav");
-    audio.playSound(mainTheme.get(), 1.5);
+    auto assetFolder = std::getenv("ASSET_FOLDER");
+    if (assetFolder != nullptr)
+    {
+      m_mainTheme = audio.loadWavFile(std::string(assetFolder) + "/cyberpunky_theme.wav");
+      audio.playSound(m_mainTheme.get(), 1.5);
+    }
+
   }
 
 

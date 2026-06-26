@@ -7,4 +7,5 @@ fi
 
 APP_NAME=$1
 
+export ASSET_FOLDER=../assets
 ./bin/${APP_NAME}

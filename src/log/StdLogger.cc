@@ -67,7 +67,7 @@ auto getTimestampAsStr() -> std::string
 #ifdef _WINDOWS
   localtime_s(&localTime, &currentTime);
 #else
-  localTime = std::localtime(&currentTime);
+  localTime = *std::localtime(&currentTime);
 #endif
 
   std::stringstream out;

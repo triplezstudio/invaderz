@@ -6,6 +6,7 @@
 #define INVADERZ_IAUDIO_H
 
 #include <string>
+#include <memory>
 
 struct WaveData
 {

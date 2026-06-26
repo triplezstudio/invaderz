@@ -22,7 +22,7 @@ class Game : public runtime::CoreObject
   private:
   Eigen::Vector3f m_worldDims{Eigen::Vector3f::Zero()};
   Eigen::Vector3f m_playerPosition{Eigen::Vector3f::Zero()};
-  std::unique_ptr<WaveData> mainTheme;
+  std::unique_ptr<WaveData> m_mainTheme;
 
   void initialize();
 
