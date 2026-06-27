@@ -2,6 +2,7 @@
 #include "Game.hh"
 #include "IAudio.hh"
 #include <cstdlib>
+#include <format>
 
 namespace invaderz {
 
@@ -10,6 +11,12 @@ Game::Game(const Eigen::Vector3f &worldDims)
   , m_worldDims(worldDims)
 {
   initialize();
+}
+
+void Game::loadResources(IAudioManager &manager)
+{
+  auto assetFolder = std::format("{}/cyberpunky_theme.wav", std::getenv("ASSET_FOLDER"));
+  m_mainTheme      = manager.registerSound(assetFolder);
 }
 
 namespace {
@@ -63,32 +70,27 @@ bool Game::update(const EventData &data)
   return !data.quitRequested();
 }
 
+void Game::processSounds(IAudioManager &manager)
+{
+  static bool initial = true;
+  if (initial)
+  {
+    initial = false;
+    info("playing once");
+    manager.playOnce(m_mainTheme.id, 1.5f);
+  }
+}
+
 void Game::render(IRenderer &renderer)
 {
   renderer.renderRectangle(m_playerPosition, PLAYER_DIMS);
 }
-
-namespace {}
 
 void Game::initialize()
 {
   m_playerPosition = Eigen::Vector3f(0.0f, m_worldDims(1) - PLAYER_DIMS(1), 0.0f);
   info("player pos " + std::to_string(m_playerPosition(0)) + "x"
        + std::to_string(m_playerPosition(1)) + "x" + std::to_string(m_playerPosition(2)));
-}
-void Game::processSound(IAudio &audio)
-{
-  static bool initial = true;
-  if (initial)
-  {
-    initial          = false;
-    auto assetFolder = std::getenv("ASSET_FOLDER");
-    if (assetFolder != nullptr)
-    {
-      m_mainTheme = audio.loadWavFile(std::string(assetFolder) + "/cyberpunky_theme.wav");
-      audio.playSound(m_mainTheme.get(), 1.5);
-    }
-  }
 }
 
 } // namespace invaderz

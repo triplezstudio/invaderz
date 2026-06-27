@@ -13,5 +13,6 @@ target_link_libraries (invaderz PUBLIC
 	invaderz-interface-library
 	invaderz_game_lib
 	app_lib
+	assets_lib
 	)
 
