@@ -31,4 +31,20 @@ SoundData::~SoundData()
   SDL_DestroyAudioStream(m_stream);
 }
 
+bool SoundData::isFinished() const
+{
+  return SDL_GetAudioStreamQueued(m_stream) >= m_lengthInBytes;
+}
+
+void SoundData::update()
+{
+  SDL_PutAudioStreamData(m_stream, m_data, m_lengthInBytes);
+}
+
+void SoundData::bindToAudioDevice(const int deviceId, const float volume)
+{
+  SDL_BindAudioStream(deviceId, m_stream);
+  SDL_SetAudioStreamGain(m_stream, volume);
+}
+
 } // namespace invaderz::assets
