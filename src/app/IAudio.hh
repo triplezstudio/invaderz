@@ -5,24 +5,24 @@
 #ifndef INVADERZ_IAUDIO_H
 #define INVADERZ_IAUDIO_H
 
-#include <string>
 #include <memory>
+#include <string>
 
 struct WaveData
 {
-  SDL_AudioStream *stream = NULL;
-  uint8_t* data = nullptr;
-  uint32_t lengthInBytes = 0;
+  SDL_AudioStream *stream = nullptr;
+  uint8_t *data           = nullptr;
+  uint32_t lengthInBytes  = 0;
 };
 
 class IAudio
 {
   public:
-  IAudio() = default;
+  IAudio()          = default;
   virtual ~IAudio() = default;
 
-  virtual std::unique_ptr<WaveData> loadWavFile(const std::string& filePath) = 0;
-  virtual void playSound(WaveData* waveData, float volume) = 0;
+  virtual std::unique_ptr<WaveData> loadWavFile(const std::string &filePath) = 0;
+  virtual void playSound(WaveData *waveData, float volume)                   = 0;
 };
 
 #endif //INVADERZ_IAUDIO_H

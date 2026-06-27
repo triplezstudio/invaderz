@@ -33,17 +33,18 @@ auto App::pollEvents() -> EventData
   }
 
   // Update all of our playing sounds as well
-  for (auto waveData : currentlyPlayingSounds) {
-    if (SDL_GetAudioStreamQueued(waveData->stream) < ((int) waveData->lengthInBytes)) {
+  for (auto waveData : currentlyPlayingSounds)
+  {
+    if (SDL_GetAudioStreamQueued(waveData->stream) < ((int) waveData->lengthInBytes))
+    {
       SDL_PutAudioStreamData(waveData->stream, waveData->data, (int) waveData->lengthInBytes);
     }
-    else {
+    else
+    {
       // TODO: remove a "finished" sound from our currently playing list?
       // TODO: handle "looping"
     }
   }
-
-
 
   return data;
 }
@@ -87,42 +88,44 @@ void App::initializeSdl(const int width, const int height)
   SDL_AudioSpec want;
 
   SDL_memset(&want, 0, sizeof(want)); /* or SDL_zero(want) */
-  want.format = SDL_AUDIO_F32;
+  want.format   = SDL_AUDIO_F32;
   want.channels = 2;
-  want.freq = 48000;
+  want.freq     = 48000;
 
   audioDeviceId = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &want);
-  if (audioDeviceId == 0) {
+  if (audioDeviceId == 0)
+  {
     error("Failed to open audio: %s", SDL_GetError());
-  } else {
-    info(std::string("Bound to audio device ")+ SDL_GetAudioDeviceName(audioDeviceId));
   }
-
+  else
+  {
+    info(std::string("Bound to audio device ") + SDL_GetAudioDeviceName(audioDeviceId));
+  }
 }
 std::unique_ptr<WaveData> App::loadWavFile(const std::string &filePath)
 {
   SDL_AudioSpec spec;
-  uint8_t *wavData      = NULL;
+  uint8_t *wavData       = nullptr;
   uint32_t wavDataLength = 0;
 
-  if (!SDL_LoadWAV(filePath.c_str(), &spec, &wavData, &wavDataLength)) {
+  if (!SDL_LoadWAV(filePath.c_str(), &spec, &wavData, &wavDataLength))
+  {
     error("Couldn't load .wav file: %s", SDL_GetError());
   }
 
-  auto stream = SDL_CreateAudioStream(&spec, NULL);
+  auto stream = SDL_CreateAudioStream(&spec, nullptr);
   if (!stream)
   {
     error("Audio stream could not be created! %s", SDL_GetError());
   }
 
-  WaveData wd= {};
-  wd.stream = stream;
-  wd.data = wavData;
+  WaveData wd      = {};
+  wd.stream        = stream;
+  wd.data          = wavData;
   wd.lengthInBytes = wavDataLength;
   return std::make_unique<WaveData>(wd);
-
 }
-void App::playSound(WaveData* waveData, float volume)
+void App::playSound(WaveData *waveData, float volume)
 {
   SDL_BindAudioStream(audioDeviceId, waveData->stream);
   SDL_SetAudioStreamGain(waveData->stream, volume);
