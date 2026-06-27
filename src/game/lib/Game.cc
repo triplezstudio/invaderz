@@ -49,7 +49,6 @@ auto collectMotion(const EventData &data) -> Eigen::Vector3f
 
 bool Game::update(const EventData &data)
 {
-
   auto motion = collectMotion(data);
   m_playerPosition += motion;
   if (m_playerPosition(0) < 0.0f)
@@ -82,18 +81,14 @@ void Game::processSound(IAudio &audio)
   static bool initial = true;
   if (initial)
   {
-    initial = false;
+    initial          = false;
     auto assetFolder = std::getenv("ASSET_FOLDER");
     if (assetFolder != nullptr)
     {
       m_mainTheme = audio.loadWavFile(std::string(assetFolder) + "/cyberpunky_theme.wav");
       audio.playSound(m_mainTheme.get(), 1.5);
     }
-
   }
-
-
-
 }
 
 } // namespace invaderz

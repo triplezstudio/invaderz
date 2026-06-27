@@ -3,8 +3,8 @@
 
 #include "CoreObject.hh"
 #include "EventData.hh"
-#include "IRenderer.hh"
 #include "IAudio.hh"
+#include "IRenderer.hh"
 #include <eigen3/Eigen/Eigen>
 
 namespace invaderz {
@@ -25,7 +25,6 @@ class Game : public runtime::CoreObject
   std::unique_ptr<WaveData> m_mainTheme;
 
   void initialize();
-
 };
 
 } // namespace invaderz

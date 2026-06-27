@@ -55,4 +55,3 @@ drun: copyDebug
 
 format:
 	find src/ -iname '*.hh' -o -iname '*.cpp' | xargs clang-format -i
-	find tests/ -iname '*.hh' -o -iname '*.cpp' | xargs clang-format -i
