@@ -4,6 +4,9 @@ CPP_VERSION=20
 
 NB_PROCS=8
 
+setup:
+	mkdir assets
+
 debug:
 	mkdir -p cmake-build/Debug && \
 	cd cmake-build/Debug && \
