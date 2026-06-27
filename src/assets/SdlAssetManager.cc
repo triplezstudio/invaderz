@@ -55,9 +55,7 @@ void SdlAssetManager::playOnce(const SoundId id, const float volume)
     error("Unknown sound " + std::to_string(id));
   }
 
-  SDL_BindAudioStream(m_audioDeviceId, maybeSound->second->m_stream);
-  SDL_SetAudioStreamGain(maybeSound->second->m_stream, volume);
-
+  maybeSound->second->bindToAudioDevice(m_audioDeviceId, volume);
   m_currentlyPlayingSounds.push_back(PlayingSound{.id = id, .mode = Mode::ONCE});
 }
 
@@ -94,17 +92,14 @@ void SdlAssetManager::updatePlayingSound(const PlayingSound &sound)
     error("Unknown playing sound " + std::to_string(sound.id));
   }
 
-  const assets::SoundData &soundData = *maybeSound->second;
+  assets::SoundData &soundData = *maybeSound->second;
 
-  if (SDL_GetAudioStreamQueued(soundData.m_stream) < soundData.m_lengthInBytes)
+  if (!soundData.isFinished())
   {
-    SDL_PutAudioStreamData(soundData.m_stream, soundData.m_data, soundData.m_lengthInBytes);
+    soundData.update();
   }
-  else
-  {
-    // TODO: remove a "finished" sound from our currently playing list?
-    // TODO: handle "looping"
-  }
+  // TODO: remove a "finished" sound from our currently playing list?
+  // TODO: handle "looping"
 }
 
 } // namespace invaderz
