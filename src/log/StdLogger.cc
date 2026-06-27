@@ -62,10 +62,16 @@ bool canBeDisplayed(const Severity severity, const Severity reference)
 auto getTimestampAsStr() -> std::string
 {
   auto currentTime      = std::time(nullptr);
-  const auto *localTime = std::localtime(&currentTime);
+  std::tm localTime;
+
+#ifdef _WINDOWS
+  localtime_s(&localTime, &currentTime);
+#else
+  localTime = *std::localtime(&currentTime);
+#endif
 
   std::stringstream out;
-  out << std::put_time(localTime, "%d-%m-%Y %H:%M:%S");
+  out << std::put_time(&localTime, "%d-%m-%Y %H:%M:%S");
 
   return out.str();
 }

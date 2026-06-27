@@ -3,6 +3,7 @@
 
 #include "CoreObject.hh"
 #include "EventData.hh"
+#include "IAudio.hh"
 #include "IRenderer.hh"
 #include <eigen3/Eigen/Eigen>
 
@@ -15,11 +16,13 @@ class Game : public runtime::CoreObject
   ~Game() override = default;
 
   bool update(const EventData &data);
+  void processSound(IAudio &audio);
   void render(IRenderer &renderer);
 
   private:
   Eigen::Vector3f m_worldDims{Eigen::Vector3f::Zero()};
   Eigen::Vector3f m_playerPosition{Eigen::Vector3f::Zero()};
+  std::unique_ptr<WaveData> m_mainTheme;
 
   void initialize();
 };

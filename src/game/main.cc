@@ -23,6 +23,7 @@ int main(int /*argc*/, char * /*argv*/[])
     auto events = app.pollEvents();
     running     = game.update(events);
     app.clear();
+    game.processSound(app);
     game.render(app);
     app.render();
   }

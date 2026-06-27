@@ -1,5 +1,8 @@
 
 add_library (app_lib SHARED "")
+set_target_properties(app_lib PROPERTIES
+		WINDOWS_EXPORT_ALL_SYMBOLS ON
+)
 
 find_package (SDL3 CONFIG REQUIRED)
 
