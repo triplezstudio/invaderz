@@ -1,10 +1,9 @@
 
 add_library (app_lib SHARED "")
-set_target_properties(app_lib PROPERTIES
-		WINDOWS_EXPORT_ALL_SYMBOLS ON
-)
 
-find_package (SDL3 CONFIG REQUIRED)
+set_target_properties(app_lib PROPERTIES
+	WINDOWS_EXPORT_ALL_SYMBOLS ON
+	)
 
 if (APPLE)
     get_target_property(_sdl3_inc SDL3::SDL3 INTERFACE_INCLUDE_DIRECTORIES)
