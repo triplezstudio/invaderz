@@ -3,6 +3,7 @@
 
 #include "CoreObject.hh"
 #include "EventData.hh"
+#include "IAudioEngine.hh"
 #include "IAudioManager.hh"
 #include "IRenderer.hh"
 #include <eigen3/Eigen/Eigen>
@@ -18,7 +19,7 @@ class Game : public runtime::CoreObject
   void loadResources(IAudioManager &manager);
 
   bool update(const EventData &data);
-  void processSounds(IAudioManager &manager);
+  void processSounds(IAudioEngine &engine);
   void render(IRenderer &renderer);
 
   private:

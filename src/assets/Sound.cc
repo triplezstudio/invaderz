@@ -2,11 +2,9 @@
 #include "Sound.hh"
 #include "SdlException.hh"
 
-#include <iostream>
-
 namespace invaderz::assets {
 
-SoundData::SoundData(const std::string_view filePath)
+Sound::Sound(const std::string_view filePath)
 {
   SDL_AudioSpec spec;
   uint32_t size{};
@@ -26,22 +24,22 @@ SoundData::SoundData(const std::string_view filePath)
   }
 }
 
-SoundData::~SoundData()
+Sound::~Sound()
 {
   SDL_DestroyAudioStream(m_stream);
 }
 
-bool SoundData::isFinished() const
+bool Sound::isFinished() const
 {
   return SDL_GetAudioStreamQueued(m_stream) >= m_lengthInBytes;
 }
 
-void SoundData::update()
+void Sound::update()
 {
   SDL_PutAudioStreamData(m_stream, m_data, m_lengthInBytes);
 }
 
-void SoundData::bindToAudioDevice(const int deviceId, const float volume)
+void Sound::bindToAudioDevice(const int deviceId, const float volume)
 {
   SDL_BindAudioStream(deviceId, m_stream);
   SDL_SetAudioStreamGain(m_stream, volume);

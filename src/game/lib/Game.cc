@@ -1,6 +1,5 @@
 
 #include "Game.hh"
-#include "IAudio.hh"
 #include <cstdlib>
 #include <format>
 
@@ -70,14 +69,14 @@ bool Game::update(const EventData &data)
   return !data.quitRequested();
 }
 
-void Game::processSounds(IAudioManager &manager)
+void Game::processSounds(IAudioEngine &engine)
 {
   static bool initial = true;
   if (initial)
   {
     initial = false;
     info("playing once");
-    manager.playOnce(m_mainTheme.id, 1.5f);
+    engine.playOnce(m_mainTheme.id, 1.5f);
   }
 }
 

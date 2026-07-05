@@ -29,6 +29,7 @@ target_sources (app_lib PRIVATE
 target_link_libraries (app_lib PUBLIC
 	invaderz-interface-library
 	runtime_lib
+	assets_lib
 	SDL3::SDL3
 	Eigen3::Eigen
 	)

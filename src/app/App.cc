@@ -6,14 +6,22 @@ namespace invaderz {
 
 constexpr auto WINDOW_TITLE = "invaderz";
 
-App::App(const int width, const int height)
+App::App(const int width, const int height, IAudioManagerPtr audioManager)
   : runtime::CoreObject("app")
+  , m_audioManager(std::move(audioManager))
 {
+  if (m_audioManager == nullptr)
+  {
+    throw std::invalid_argument("Expected non null audio manager");
+  }
+
   initializeSdl(width, height);
 }
 
 App::~App()
 {
+  m_audioManager.reset();
+  SDL_CloseAudioDevice(m_audioDeviceId);
   SDL_DestroyRenderer(m_renderer);
   SDL_DestroyWindow(m_window);
   SDL_Quit();
@@ -56,6 +64,22 @@ void App::renderRectangle(const Eigen::Vector3f &position, const Eigen::Vector3f
   SDL_RenderFillRect(m_renderer, &rect);
 }
 
+void App::playOnce(const SoundId id, const float volume)
+{
+  auto &sound = m_audioManager->getSound(id);
+
+  sound.bindToAudioDevice(m_audioDeviceId, volume);
+  m_currentlyPlayingSounds.push_back(PlayingSound{.id = id, .mode = Mode::ONCE});
+}
+
+void App::update()
+{
+  for (const auto &sound : m_currentlyPlayingSounds)
+  {
+    updatePlayingSound(sound);
+  }
+}
+
 void App::initializeSdl(const int width, const int height)
 {
   if (!SDL_Init(SDL_INIT_EVENTS | SDL_INIT_VIDEO | SDL_INIT_AUDIO))
@@ -67,6 +91,37 @@ void App::initializeSdl(const int width, const int height)
   {
     throw runtime::SdlException("Failed to initialize window/renderer");
   }
+
+  initializeAudio();
+}
+
+void App::initializeAudio()
+{
+  SDL_AudioSpec want{
+    .format   = SDL_AUDIO_F32,
+    .channels = 2,
+    .freq     = 48000,
+  };
+
+  m_audioDeviceId = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &want);
+  if (m_audioDeviceId == 0)
+  {
+    throw runtime::SdlException("Failed to open audio device");
+  }
+
+  info(std::string("Bound to audio device ") + SDL_GetAudioDeviceName(m_audioDeviceId));
+}
+
+void App::updatePlayingSound(const PlayingSound &sound)
+{
+  auto &soundData = m_audioManager->getSound(sound.id);
+
+  if (!soundData.isFinished())
+  {
+    soundData.update();
+  }
+  // TODO: remove a "finished" sound from our currently playing list?
+  // TODO: handle "looping"
 }
 
 } // namespace invaderz

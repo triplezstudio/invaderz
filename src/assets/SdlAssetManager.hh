@@ -18,29 +18,11 @@ class SdlAssetManager : public IAudioManager, public runtime::CoreObject
   auto registerSound(const std::string_view filePath) -> assets::Asset override;
   void unregister(const assets::Asset &asset) override;
 
-  void playOnce(const SoundId id, const float volume) override;
-
-  void update() override;
+  auto getSound(const SoundId id) const -> assets::Sound & override;
 
   private:
-  enum class Mode
-  {
-    ONCE,
-  };
-  struct PlayingSound
-  {
-    assets::Id id{};
-    Mode mode{Mode::ONCE};
-  };
-
-  SDL_AudioDeviceID m_audioDeviceId{0};
-
   std::atomic<assets::Id> m_nextAssetId{0};
-  std::unordered_map<SoundId, assets::SoundDataPtr> m_sounds{};
-  std::vector<PlayingSound> m_currentlyPlayingSounds{};
-
-  void initialize();
-  void updatePlayingSound(const PlayingSound &sound);
+  std::unordered_map<SoundId, assets::SoundPtr> m_sounds{};
 };
 
 } // namespace invaderz

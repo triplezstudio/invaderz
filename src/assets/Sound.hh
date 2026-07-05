@@ -7,11 +7,11 @@
 
 namespace invaderz::assets {
 
-class SoundData
+class Sound
 {
   public:
-  SoundData(const std::string_view filePath);
-  ~SoundData();
+  Sound(const std::string_view filePath);
+  ~Sound();
 
   bool isFinished() const;
   void update();
@@ -23,6 +23,6 @@ class SoundData
   int m_lengthInBytes{0};
 };
 
-using SoundDataPtr = std::unique_ptr<SoundData>;
+using SoundPtr = std::unique_ptr<Sound>;
 
 } // namespace invaderz::assets

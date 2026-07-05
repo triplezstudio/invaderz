@@ -2,6 +2,8 @@
 #pragma once
 
 #include "Asset.hh"
+#include "Sound.hh"
+#include <memory>
 #include <string_view>
 
 namespace invaderz {
@@ -23,11 +25,9 @@ class IAudioManager
   virtual auto registerSound(const std::string_view filePath) -> assets::Asset = 0;
   virtual void unregister(const assets::Asset &asset)                          = 0;
 
-  virtual void playOnce(const SoundId id, const float volume) = 0;
-
-  /// @brief - Used to update the currently playing sounds: it also cleans
-  /// sounds which are terminated.
-  virtual void update() = 0;
+  virtual auto getSound(const SoundId id) const -> assets::Sound & = 0;
 };
+
+using IAudioManagerPtr = std::unique_ptr<IAudioManager>;
 
 } // namespace invaderz
