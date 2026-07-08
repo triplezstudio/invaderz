@@ -2,10 +2,12 @@
 #pragma once
 
 #include "CoreObject.hh"
-#include "EventData.hh"
+#include "FrameData.hh"
 #include "IAudioEngine.hh"
 #include "IAudioManager.hh"
 #include "IRenderer.hh"
+#include "InputState.hh"
+#include "Timer.hh"
 #include <SDL3/SDL.h>
 
 namespace invaderz {
@@ -16,7 +18,7 @@ class App : public runtime::CoreObject, public IRenderer, public IAudioEngine
   App(const int width, const int height, IAudioManagerPtr audioManager);
   ~App() override;
 
-  auto pollEvents() -> EventData;
+  auto pollEvents() -> FrameData;
 
   void clear();
   void render();
@@ -31,6 +33,8 @@ class App : public runtime::CoreObject, public IRenderer, public IAudioEngine
   SDL_Renderer *m_renderer{nullptr};
   SDL_AudioDeviceID m_audioDeviceId{0};
   IAudioManagerPtr m_audioManager{};
+  InputState m_state{};
+  Timer m_timer{};
 
   enum class Mode
   {

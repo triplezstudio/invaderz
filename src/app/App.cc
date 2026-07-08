@@ -27,18 +27,25 @@ App::~App()
   SDL_Quit();
 }
 
-auto App::pollEvents() -> EventData
+auto App::pollEvents() -> FrameData
 {
-  EventData data{};
-
+  bool quit{false};
   SDL_Event event{};
-
   while (SDL_PollEvent(&event))
   {
-    data.events.push_back(event);
+    if (event.type == SDL_EVENT_QUIT)
+    {
+      quit = true;
+    }
   }
 
-  return data;
+  m_state.update();
+
+  return FrameData{
+    .quit    = quit,
+    .state   = m_state,
+    .elapsed = m_timer.restart(),
+  };
 }
 
 void App::clear()

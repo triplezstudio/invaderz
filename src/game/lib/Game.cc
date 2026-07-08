@@ -21,39 +21,30 @@ void Game::loadResources(IAudioManager &manager)
 namespace {
 // Player dimensions in pixels
 const Eigen::Vector3f PLAYER_DIMS(32.0f, 32.0f, 0.0f);
-// Player speed in pixels per frame
-constexpr auto PLAYER_SPEED = 2;
+// Player speed in pixels per second
+constexpr auto PLAYER_SPEED = 280;
 
-auto collectMotion(const EventData &data) -> Eigen::Vector3f
+auto collectMotion(const FrameData &data) -> Eigen::Vector3f
 {
   Eigen::Vector3f motion = Eigen::Vector3f::Zero();
 
-  for (const auto &event : data.events)
+  if (data.state.held(keyboard::LEFT))
   {
-    if (event.type == SDL_EVENT_KEY_DOWN)
-    {
-      switch (event.key.key)
-      {
-        case SDLK_LEFT:
-          motion(0) -= PLAYER_SPEED;
-          break;
-        case SDLK_RIGHT:
-          motion(0) += PLAYER_SPEED;
-          break;
-        default:
-          break;
-      }
-    }
+    motion(0) -= PLAYER_SPEED;
+  }
+  if (data.state.held(keyboard::RIGHT))
+  {
+    motion(0) += PLAYER_SPEED;
   }
 
   motion.normalize();
-  motion *= PLAYER_SPEED;
+  motion *= (PLAYER_SPEED * data.elapsed);
 
   return motion;
 }
 } // namespace
 
-bool Game::update(const EventData &data)
+bool Game::update(const FrameData &data)
 {
   auto motion = collectMotion(data);
   m_playerPosition += motion;
@@ -66,7 +57,8 @@ bool Game::update(const EventData &data)
     m_playerPosition(0) = m_worldDims(0) - PLAYER_DIMS(0);
   }
 
-  return !data.quitRequested();
+  const auto quit = data.quit || data.state.held(keyboard::ESCAPE);
+  return !quit;
 }
 
 void Game::processSounds(IAudioEngine &engine)

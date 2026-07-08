@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreObject.hh"
-#include "EventData.hh"
+#include "FrameData.hh"
 #include "IAudioEngine.hh"
 #include "IAudioManager.hh"
 #include "IRenderer.hh"
@@ -18,7 +18,7 @@ class Game : public runtime::CoreObject
 
   void loadResources(IAudioManager &manager);
 
-  bool update(const EventData &data);
+  bool update(const FrameData &data);
   void processSounds(IAudioEngine &engine);
   void render(IRenderer &renderer);
 
