@@ -4,6 +4,9 @@ CPP_VERSION=20
 
 NB_PROCS=8
 
+setup:
+	mkdir assets
+
 debug:
 	mkdir -p cmake-build/Debug && \
 	cd cmake-build/Debug && \
@@ -52,4 +55,3 @@ drun: copyDebug
 
 format:
 	find src/ -iname '*.hh' -o -iname '*.cpp' | xargs clang-format -i
-	find tests/ -iname '*.hh' -o -iname '*.cpp' | xargs clang-format -i

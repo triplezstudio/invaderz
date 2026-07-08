@@ -1,20 +1,108 @@
 
 #include "CoreException.hh"
 #include "Locator.hh"
+#ifdef _WINDOWS
+#include <windows.h>
+#include <dbghelp.h>
+#include <cstdlib>
+#include <sstream>
+#include <iomanip>
+#else
 #include <execinfo.h>
+#endif
 #include <vector>
 
 namespace invaderz::runtime {
 namespace {
 constexpr auto MAX_STACK_TRACE_DEPTH = 32u;
 
+auto getTraceSize(std::vector<void *> & addresses) -> size_t
+{
+#ifdef _WINDOWS
+  return CaptureStackBackTrace(
+    0,
+    MAX_STACK_TRACE_DEPTH,
+    addresses.data(),
+    nullptr
+  );
+#else
+  return backtrace(addresses.data(), addresses.size());
+#endif
+}
+
+
+auto resolveStackTraceSymbols(std::vector<void*>& addresses) -> std::vector<std::string>
+{
+
+#ifdef _WINDOWS
+  HANDLE process = GetCurrentProcess();
+
+  SymInitialize(process, nullptr, TRUE);
+
+  std::vector<std::string> result;
+  result.reserve(addresses.size());
+
+  constexpr size_t MAX_SYMBOL_NAME_LENGTH = 256;
+
+  auto* symbol = reinterpret_cast<SYMBOL_INFO*>(
+    std::calloc(
+      1,
+      sizeof(SYMBOL_INFO) + MAX_SYMBOL_NAME_LENGTH * sizeof(char)
+        )
+  );
+
+  symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+  symbol->MaxNameLen = MAX_SYMBOL_NAME_LENGTH - 1;
+
+  for (void* addressPtr : addresses)
+  {
+    DWORD64 address = reinterpret_cast<DWORD64>(addressPtr);
+
+    DWORD64 displacement = 0;
+
+    if (SymFromAddr(process, address, &displacement, symbol))
+    {
+      std::ostringstream line;
+      line << symbol->Name
+           << " + 0x" << std::hex << displacement;
+
+      result.push_back(line.str());
+    }
+    else
+    {
+      std::ostringstream line;
+      line << "<unknown> at 0x" << std::hex << address;
+      result.push_back(line.str());
+    }
+  }
+
+  std::free(symbol);
+  SymCleanup(process);
+  return result;
+
+#elif defined __linux__
+
+  auto symbolArray = backtrace_symbols(addresses.data(), addresses.size());
+  std::vector<std::string> symbolVector;
+
+  for (char** p = symbolArray; *p != nullptr; ++p)
+  {
+    symbolVector.emplace_back(*p);
+  }
+  free(symbolArray);
+
+  return symbolVector;
+
+#endif
+}
+
 auto retrieveStackTrace() -> std::string
 {
   std::vector<void *> addresses(MAX_STACK_TRACE_DEPTH);
-  const auto size = backtrace(addresses.data(), addresses.size());
+  const auto size = getTraceSize(addresses);
   addresses.resize(size);
 
-  const auto funcs = backtrace_symbols(addresses.data(), addresses.size());
+  const auto funcs = resolveStackTraceSymbols(addresses);
 
   std::string stackTrace{};
   for (auto i = 0u; i < addresses.size(); ++i)
@@ -23,9 +111,6 @@ auto retrieveStackTrace() -> std::string
     stackTrace += funcs[i];
     stackTrace += "\n";
   }
-
-  // https://man7.org/linux/man-pages/man3/backtrace.3.html
-  free(funcs);
 
   return stackTrace;
 }

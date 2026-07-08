@@ -1,6 +1,10 @@
 
 add_library (log_lib SHARED "")
 
+set_target_properties(log_lib PROPERTIES
+		WINDOWS_EXPORT_ALL_SYMBOLS ON
+)
+
 set (CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 target_include_directories (log_lib PUBLIC

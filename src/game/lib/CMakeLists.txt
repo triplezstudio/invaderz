@@ -1,5 +1,9 @@
 
 add_library (invaderz_game_lib SHARED "")
+set_target_properties(invaderz_game_lib PROPERTIES
+		WINDOWS_EXPORT_ALL_SYMBOLS ON
+)
+target_compile_definitions(invaderz_game_lib PRIVATE _CRT_SECURE_NO_WARNINGS)
 
 set (CMAKE_POSITION_INDEPENDENT_CODE ON)
 

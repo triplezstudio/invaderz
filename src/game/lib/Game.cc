@@ -1,5 +1,7 @@
 
 #include "Game.hh"
+#include "IAudio.hh"
+#include <cstdlib>
 
 namespace invaderz {
 
@@ -73,6 +75,20 @@ void Game::initialize()
   m_playerPosition = Eigen::Vector3f(0.0f, m_worldDims(1) - PLAYER_DIMS(1), 0.0f);
   info("player pos " + std::to_string(m_playerPosition(0)) + "x"
        + std::to_string(m_playerPosition(1)) + "x" + std::to_string(m_playerPosition(2)));
+}
+void Game::processSound(IAudio &audio)
+{
+  static bool initial = true;
+  if (initial)
+  {
+    initial          = false;
+    auto assetFolder = std::getenv("ASSET_FOLDER");
+    if (assetFolder != nullptr)
+    {
+      m_mainTheme = audio.loadWavFile(std::string(assetFolder) + "/cyberpunky_theme.wav");
+      audio.playSound(m_mainTheme.get(), 1.5);
+    }
+  }
 }
 
 } // namespace invaderz
