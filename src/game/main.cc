@@ -2,8 +2,8 @@
 #include "App.hh"
 #include "Game.hh"
 #include "Locator.hh"
+#include "SdlAssetManager.hh"
 #include "StdLogger.hh"
-#include <iostream>
 
 int main(int /*argc*/, char * /*argv*/[])
 {
@@ -14,8 +14,12 @@ int main(int /*argc*/, char * /*argv*/[])
   constexpr auto width  = 480;
   constexpr auto height = 880;
 
+  auto manager = std::make_unique<invaderz::SdlAssetManager>();
+
   invaderz::Game game(Eigen::Vector3f(1.0f * width, 1.0f * height, 0.0f));
-  invaderz::App app(width, height);
+  game.loadResources(*manager);
+
+  invaderz::App app(width, height, std::move(manager));
 
   bool running = true;
   while (running)
@@ -23,8 +27,9 @@ int main(int /*argc*/, char * /*argv*/[])
     auto events = app.pollEvents();
     running     = game.update(events);
     app.clear();
-    game.processSound(app);
+    game.processSounds(app);
     game.render(app);
+    app.update();
     app.render();
   }
 

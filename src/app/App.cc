@@ -1,21 +1,27 @@
 
 #include "App.hh"
+#include "SdlException.hh"
 
 namespace invaderz {
 
 constexpr auto WINDOW_TITLE = "invaderz";
 
-App::App(const int width, const int height)
+App::App(const int width, const int height, IAudioManagerPtr audioManager)
   : runtime::CoreObject("app")
+  , m_audioManager(std::move(audioManager))
 {
+  if (m_audioManager == nullptr)
+  {
+    throw std::invalid_argument("Expected non null audio manager");
+  }
+
   initializeSdl(width, height);
 }
 
 App::~App()
 {
-  SDL_CloseAudioDevice(audioDeviceId);
-  // TODO destroy loaded audio streams
-
+  m_audioManager.reset();
+  SDL_CloseAudioDevice(m_audioDeviceId);
   SDL_DestroyRenderer(m_renderer);
   SDL_DestroyWindow(m_window);
   SDL_Quit();
@@ -30,20 +36,6 @@ auto App::pollEvents() -> EventData
   while (SDL_PollEvent(&event))
   {
     data.events.push_back(event);
-  }
-
-  // Update all of our playing sounds as well
-  for (auto waveData : currentlyPlayingSounds)
-  {
-    if (SDL_GetAudioStreamQueued(waveData->stream) < ((int) waveData->lengthInBytes))
-    {
-      SDL_PutAudioStreamData(waveData->stream, waveData->data, (int) waveData->lengthInBytes);
-    }
-    else
-    {
-      // TODO: remove a "finished" sound from our currently playing list?
-      // TODO: handle "looping"
-    }
   }
 
   return data;
@@ -72,64 +64,64 @@ void App::renderRectangle(const Eigen::Vector3f &position, const Eigen::Vector3f
   SDL_RenderFillRect(m_renderer, &rect);
 }
 
+void App::playOnce(const SoundId id, const float volume)
+{
+  auto &sound = m_audioManager->getSound(id);
+
+  sound.bindToAudioDevice(m_audioDeviceId, volume);
+  m_currentlyPlayingSounds.push_back(PlayingSound{.id = id, .mode = Mode::ONCE});
+}
+
+void App::update()
+{
+  for (const auto &sound : m_currentlyPlayingSounds)
+  {
+    updatePlayingSound(sound);
+  }
+}
+
 void App::initializeSdl(const int width, const int height)
 {
   if (!SDL_Init(SDL_INIT_EVENTS | SDL_INIT_VIDEO | SDL_INIT_AUDIO))
   {
-    error("Failed to initialize SDL", std::string(SDL_GetError()));
+    throw runtime::SdlException("Failed to initialize SDL");
   }
 
   if (!SDL_CreateWindowAndRenderer(WINDOW_TITLE, width, height, 0, &m_window, &m_renderer))
   {
-    error("Failed to initialize window/renderer", std::string(SDL_GetError()));
+    throw runtime::SdlException("Failed to initialize window/renderer");
   }
 
-  // Audio setup
-  SDL_AudioSpec want;
-
-  SDL_memset(&want, 0, sizeof(want)); /* or SDL_zero(want) */
-  want.format   = SDL_AUDIO_F32;
-  want.channels = 2;
-  want.freq     = 48000;
-
-  audioDeviceId = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &want);
-  if (audioDeviceId == 0)
-  {
-    error("Failed to open audio: %s", SDL_GetError());
-  }
-  else
-  {
-    info(std::string("Bound to audio device ") + SDL_GetAudioDeviceName(audioDeviceId));
-  }
+  initializeAudio();
 }
-std::unique_ptr<WaveData> App::loadWavFile(const std::string &filePath)
+
+void App::initializeAudio()
 {
-  SDL_AudioSpec spec;
-  uint8_t *wavData       = nullptr;
-  uint32_t wavDataLength = 0;
+  SDL_AudioSpec want{
+    .format   = SDL_AUDIO_F32,
+    .channels = 2,
+    .freq     = 48000,
+  };
 
-  if (!SDL_LoadWAV(filePath.c_str(), &spec, &wavData, &wavDataLength))
+  m_audioDeviceId = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &want);
+  if (m_audioDeviceId == 0)
   {
-    error("Couldn't load .wav file: %s", SDL_GetError());
+    throw runtime::SdlException("Failed to open audio device");
   }
 
-  auto stream = SDL_CreateAudioStream(&spec, nullptr);
-  if (!stream)
-  {
-    error("Audio stream could not be created! %s", SDL_GetError());
-  }
-
-  WaveData wd      = {};
-  wd.stream        = stream;
-  wd.data          = wavData;
-  wd.lengthInBytes = wavDataLength;
-  return std::make_unique<WaveData>(wd);
+  info(std::string("Bound to audio device ") + SDL_GetAudioDeviceName(m_audioDeviceId));
 }
-void App::playSound(WaveData *waveData, float volume)
+
+void App::updatePlayingSound(const PlayingSound &sound)
 {
-  SDL_BindAudioStream(audioDeviceId, waveData->stream);
-  SDL_SetAudioStreamGain(waveData->stream, volume);
-  currentlyPlayingSounds.push_back(waveData);
+  auto &soundData = m_audioManager->getSound(sound.id);
+
+  if (!soundData.isFinished())
+  {
+    soundData.update();
+  }
+  // TODO: remove a "finished" sound from our currently playing list?
+  // TODO: handle "looping"
 }
 
 } // namespace invaderz
