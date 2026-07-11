@@ -6,6 +6,8 @@
 #include "IAudioEngine.hh"
 #include "IAudioManager.hh"
 #include "IRenderer.hh"
+#include "PlayerUpdater.hh"
+#include "World.hh"
 #include <eigen3/Eigen/Eigen>
 
 namespace invaderz {
@@ -13,7 +15,7 @@ namespace invaderz {
 class Game : public runtime::CoreObject
 {
   public:
-  Game(const Eigen::Vector3f &worldDims);
+  Game(Eigen::Vector3f screenDims);
   ~Game() override = default;
 
   void loadResources(IAudioManager &manager);
@@ -23,11 +25,13 @@ class Game : public runtime::CoreObject
   void render(IRenderer &renderer);
 
   private:
-  Eigen::Vector3f m_worldDims{Eigen::Vector3f::Zero()};
-  Eigen::Vector3f m_playerPosition{Eigen::Vector3f::Zero()};
   assets::Asset m_mainTheme{};
 
-  void initialize();
+  Eigen::Vector3f m_screenDims{};
+  WorldPtr m_world{};
+  PlayerUpdaterPtr m_playerUpdater{};
+
+  void initialize(Eigen::Vector3f screenDims);
 };
 
 } // namespace invaderz

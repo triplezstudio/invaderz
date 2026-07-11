@@ -59,9 +59,30 @@ void App::render()
   SDL_RenderPresent(m_renderer);
 }
 
-void App::renderRectangle(const Eigen::Vector3f &position, const Eigen::Vector3f &dims)
+namespace {
+constexpr std::uint8_t ALPHA_OPAQUE = 255;
+
+auto colorToRgb(const Color color) -> std::array<std::uint8_t, 3>
 {
-  SDL_SetRenderDrawColor(m_renderer, 168, 119, 50, 255);
+  switch (color)
+  {
+    case Color::ORANGE:
+      return std::array<std::uint8_t, 3>{168, 119, 50};
+    case Color::TURQUOISE:
+      return std::array<std::uint8_t, 3>{90, 222, 209};
+    default:
+      throw std::runtime_error("Unsupported color");
+  }
+}
+} // namespace
+
+void App::renderRectangle(const Eigen::Vector3f &position,
+                          const Eigen::Vector3f &dims,
+                          const Color color)
+{
+  auto rgb = colorToRgb(color);
+
+  SDL_SetRenderDrawColor(m_renderer, rgb[0], rgb[1], rgb[2], ALPHA_OPAQUE);
   SDL_FRect rect{
     .x = position(0),
     .y = position(1),
