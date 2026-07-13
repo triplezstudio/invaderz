@@ -23,7 +23,9 @@ class App : public runtime::CoreObject, public IRenderer, public IAudioEngine
   void clear();
   void render();
 
-  void renderRectangle(const Eigen::Vector3f &position, const Eigen::Vector3f &dims) override;
+  void renderRectangle(const Eigen::Vector3f &position,
+                       const Eigen::Vector3f &dims,
+                       const Color color) override;
 
   void playOnce(const SoundId id, const float volume) override;
   void update() override;

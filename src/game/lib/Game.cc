@@ -1,15 +1,16 @@
 
 #include "Game.hh"
+#include "CoordinateConverter.hh"
 #include <cstdlib>
 #include <format>
 
 namespace invaderz {
 
-Game::Game(const Eigen::Vector3f &worldDims)
+Game::Game(Eigen::Vector3f screenDims)
   : runtime::CoreObject("game")
-  , m_worldDims(worldDims)
+  , m_screenDims(screenDims)
 {
-  initialize();
+  initialize(std::move(screenDims));
 }
 
 void Game::loadResources(IAudioManager &manager)
@@ -18,44 +19,10 @@ void Game::loadResources(IAudioManager &manager)
   m_mainTheme      = manager.registerSound(assetFolder);
 }
 
-namespace {
-// Player dimensions in pixels
-const Eigen::Vector3f PLAYER_DIMS(32.0f, 32.0f, 0.0f);
-// Player speed in pixels per second
-constexpr auto PLAYER_SPEED = 280;
-
-auto collectMotion(const FrameData &data) -> Eigen::Vector3f
-{
-  Eigen::Vector3f motion = Eigen::Vector3f::Zero();
-
-  if (data.state.held(keyboard::LEFT))
-  {
-    motion(0) -= PLAYER_SPEED;
-  }
-  if (data.state.held(keyboard::RIGHT))
-  {
-    motion(0) += PLAYER_SPEED;
-  }
-
-  motion.normalize();
-  motion *= (PLAYER_SPEED * data.elapsed);
-
-  return motion;
-}
-} // namespace
-
 bool Game::update(const FrameData &data)
 {
-  auto motion = collectMotion(data);
-  m_playerPosition += motion;
-  if (m_playerPosition(0) < 0.0f)
-  {
-    m_playerPosition(0) = 0.0f;
-  }
-  if (m_playerPosition(0) + PLAYER_DIMS(0) > m_worldDims(0))
-  {
-    m_playerPosition(0) = m_worldDims(0) - PLAYER_DIMS(0);
-  }
+  m_playerUpdater->update(data);
+  m_world->update(data.elapsed);
 
   const auto quit = data.quit || data.state.held(keyboard::ESCAPE);
   return !quit;
@@ -72,16 +39,33 @@ void Game::processSounds(IAudioEngine &engine)
   }
 }
 
+namespace {
+// The dimensions are expressed in pixels.
+const Eigen::Vector3f PLAYER_DIMS(32.0f, 32.0f, 0.0f);
+const Eigen::Vector3f BULLET_DIMS(4.0f, 4.0f, 0.0f);
+} // namespace
+
 void Game::render(IRenderer &renderer)
 {
-  renderer.renderRectangle(m_playerPosition, PLAYER_DIMS);
+  CoordinateConverter converter{m_world->dims(), m_screenDims};
+
+  renderer.renderRectangle(converter.toScreenPos(m_world->playerPosition(), PLAYER_DIMS),
+                           PLAYER_DIMS,
+                           Color::ORANGE);
+
+  for (const auto &bullet : m_world->bullets())
+  {
+    renderer.renderRectangle(converter.toScreenPos(bullet, BULLET_DIMS),
+                             BULLET_DIMS,
+                             Color::TURQUOISE);
+  }
 }
 
-void Game::initialize()
+void Game::initialize(Eigen::Vector3f screenDims)
 {
-  m_playerPosition = Eigen::Vector3f(0.0f, m_worldDims(1) - PLAYER_DIMS(1), 0.0f);
-  info("player pos " + std::to_string(m_playerPosition(0)) + "x"
-       + std::to_string(m_playerPosition(1)) + "x" + std::to_string(m_playerPosition(2)));
+  Eigen::Vector3f worldDims = screenDims - PLAYER_DIMS;
+  m_world                   = std::make_unique<World>(std::move(worldDims));
+  m_playerUpdater           = std::make_unique<PlayerUpdater>(*m_world);
 }
 
 } // namespace invaderz

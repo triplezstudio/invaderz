@@ -14,7 +14,11 @@ target_include_directories (invaderz_game_lib PUBLIC
 	)
 
 target_sources (invaderz_game_lib PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/CoordinateConverter.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/Game.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/PlayerUpdater.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/VectorUtils.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/World.cc
 	)
 
 target_link_libraries (invaderz_game_lib
