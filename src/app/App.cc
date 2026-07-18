@@ -71,6 +71,8 @@ auto colorToRgb(const Color color) -> std::array<std::uint8_t, 3>
       return std::array<std::uint8_t, 3>{168, 119, 50};
     case Color::TURQUOISE:
       return std::array<std::uint8_t, 3>{90, 222, 209};
+    case Color::BURGUNDY:
+      return std::array<std::uint8_t, 3>{102, 0, 51};
     default:
       throw std::runtime_error("Unsupported color");
   }

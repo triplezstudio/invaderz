@@ -6,7 +6,8 @@ namespace invaderz {
 enum class Color
 {
   ORANGE,
-  TURQUOISE
+  TURQUOISE,
+  BURGUNDY
 };
 
 }

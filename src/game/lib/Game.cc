@@ -41,6 +41,7 @@ void Game::processSounds(IAudioEngine &engine)
 namespace {
 // The dimensions are expressed in pixels.
 const Eigen::Vector3f PLAYER_DIMS(32.0f, 32.0f, 0.0f);
+const Eigen::Vector3f ENEMY_DIMS(32.0f, 32.0f, 0.0f);
 const Eigen::Vector3f BULLET_DIMS(4.0f, 4.0f, 0.0f);
 } // namespace
 
@@ -51,6 +52,11 @@ void Game::render(IRenderer &renderer)
   renderer.renderRectangle(converter.toScreenPos(m_world->playerPosition(), PLAYER_DIMS),
                            PLAYER_DIMS,
                            Color::ORANGE);
+
+  for (const auto &enemy : m_world->enemies())
+  {
+    renderer.renderRectangle(converter.toScreenPos(enemy, ENEMY_DIMS), ENEMY_DIMS, Color::BURGUNDY);
+  }
 
   for (const auto &bullet : m_world->bullets())
   {
