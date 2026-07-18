@@ -23,7 +23,6 @@ class IAudioManager
   /// @param filePath - the location of the resource on the filesystem
   /// @return - an identifier for the sound
   virtual auto registerSound(const std::string_view filePath) -> assets::Asset = 0;
-  virtual void unregister(const assets::Asset &asset)                          = 0;
 
   virtual auto getSound(const SoundId id) const -> assets::Sound & = 0;
 };
