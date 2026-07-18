@@ -6,6 +6,7 @@
 #include "IAudioEngine.hh"
 #include "IAudioManager.hh"
 #include "IRenderer.hh"
+#include "ITextureManager.hh"
 #include "PlayerUpdater.hh"
 #include "World.hh"
 #include <eigen3/Eigen/Eigen>
@@ -18,7 +19,8 @@ class Game : public runtime::CoreObject
   Game(Eigen::Vector3f screenDims);
   ~Game() override = default;
 
-  void loadResources(IAudioManager &manager);
+  void loadSounds(IAudioManager &manager);
+  void loadTextures(ITextureManager &manager);
 
   bool update(const FrameData &data);
   void processSounds(IAudioEngine &engine);
@@ -26,6 +28,7 @@ class Game : public runtime::CoreObject
 
   private:
   assets::Asset m_mainTheme{};
+  assets::Asset m_shipTexture{};
 
   Eigen::Vector3f m_screenDims{};
   WorldPtr m_world{};
