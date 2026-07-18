@@ -13,10 +13,16 @@ Game::Game(Eigen::Vector3f screenDims)
   initialize(std::move(screenDims));
 }
 
-void Game::loadResources(IAudioManager &manager)
+void Game::loadSounds(IAudioManager &manager)
 {
-  auto assetFolder = std::format("{}/cyberpunky_theme.wav", std::getenv("ASSET_FOLDER"));
-  m_mainTheme      = manager.registerSound(assetFolder);
+  auto themeFilePath = std::format("{}/cyberpunky_theme.wav", std::getenv("ASSET_FOLDER"));
+  m_mainTheme        = manager.registerSound(themeFilePath);
+}
+
+void Game::loadTextures(ITextureManager &manager)
+{
+  auto shipFilePath = std::format("{}/player_ship.png", std::getenv("ASSET_FOLDER"));
+  m_shipTexture     = manager.registerTexture(shipFilePath);
 }
 
 bool Game::update(const FrameData &data)

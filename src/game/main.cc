@@ -17,7 +17,8 @@ int main(int /*argc*/, char * /*argv*/[])
   auto manager = std::make_unique<invaderz::SdlAssetManager>();
 
   invaderz::Game game(Eigen::Vector3f(1.0f * width, 1.0f * height, 0.0f));
-  game.loadResources(*manager);
+  game.loadSounds(*manager);
+  game.loadTextures(*manager);
 
   invaderz::App app(width, height, std::move(manager));
 
