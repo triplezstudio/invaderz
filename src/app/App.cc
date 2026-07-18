@@ -3,8 +3,9 @@
 #include "SdlException.hh"
 
 namespace invaderz {
-
+namespace {
 constexpr auto WINDOW_TITLE = "invaderz";
+}
 
 App::App(const int width, const int height, IAudioManagerPtr audioManager)
   : runtime::CoreObject("app")
@@ -106,6 +107,11 @@ void App::update()
   {
     updatePlayingSound(sound);
   }
+
+  std::erase_if(m_currentlyPlayingSounds, [this](const PlayingSound &sound) {
+    auto &soundData = m_audioManager->getSound(sound.id);
+    return soundData.isFinished();
+  });
 }
 
 void App::initializeSdl(const int width, const int height)
@@ -148,8 +154,6 @@ void App::updatePlayingSound(const PlayingSound &sound)
   {
     soundData.update();
   }
-  // TODO: remove a "finished" sound from our currently playing list?
-  // TODO: handle "looping"
 }
 
 } // namespace invaderz

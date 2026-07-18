@@ -15,8 +15,8 @@ Game::Game(Eigen::Vector3f screenDims)
 
 void Game::loadResources(IAudioManager &manager)
 {
-  auto assetFolder = std::format("{}/cyberpunky_theme.wav", std::getenv("ASSET_FOLDER"));
-  m_mainTheme      = manager.registerSound(assetFolder);
+  auto themeFilePath = std::format("{}/cyberpunky_theme.wav", std::getenv("ASSET_FOLDER"));
+  m_mainTheme        = manager.registerSound(themeFilePath);
 }
 
 bool Game::update(const FrameData &data)
@@ -34,7 +34,6 @@ void Game::processSounds(IAudioEngine &engine)
   if (initial)
   {
     initial = false;
-    info("playing once");
     engine.playOnce(m_mainTheme.id, 1.5f);
   }
 }
