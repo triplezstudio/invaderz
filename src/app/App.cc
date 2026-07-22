@@ -3,8 +3,9 @@
 #include "SdlException.hh"
 
 namespace invaderz {
-
+namespace {
 constexpr auto WINDOW_TITLE = "invaderz";
+}
 
 App::App(const int width, const int height, IAudioManagerPtr audioManager)
   : runtime::CoreObject("app")
@@ -70,6 +71,8 @@ auto colorToRgb(const Color color) -> std::array<std::uint8_t, 3>
       return std::array<std::uint8_t, 3>{168, 119, 50};
     case Color::TURQUOISE:
       return std::array<std::uint8_t, 3>{90, 222, 209};
+    case Color::BURGUNDY:
+      return std::array<std::uint8_t, 3>{102, 0, 51};
     default:
       throw std::runtime_error("Unsupported color");
   }
@@ -106,6 +109,11 @@ void App::update()
   {
     updatePlayingSound(sound);
   }
+
+  std::erase_if(m_currentlyPlayingSounds, [this](const PlayingSound &sound) {
+    auto &soundData = m_audioManager->getSound(sound.id);
+    return soundData.isFinished();
+  });
 }
 
 void App::initializeSdl(const int width, const int height)
@@ -148,8 +156,6 @@ void App::updatePlayingSound(const PlayingSound &sound)
   {
     soundData.update();
   }
-  // TODO: remove a "finished" sound from our currently playing list?
-  // TODO: handle "looping"
 }
 
 } // namespace invaderz

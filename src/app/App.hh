@@ -38,6 +38,7 @@ class App : public runtime::CoreObject, public IRenderer, public IAudioEngine
   InputState m_state{};
   Timer m_timer{};
 
+  // TODO: handle "looping"
   enum class Mode
   {
     ONCE,
@@ -52,6 +53,7 @@ class App : public runtime::CoreObject, public IRenderer, public IAudioEngine
 
   void initializeSdl(const int width, const int height);
   void initializeAudio();
+
   void updatePlayingSound(const PlayingSound &sound);
 };
 

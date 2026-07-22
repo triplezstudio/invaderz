@@ -3,6 +3,7 @@
 
 #include "CoreObject.hh"
 #include "FrameData.hh"
+#include "Wave.hh"
 #include <eigen3/Eigen/Eigen>
 #include <memory>
 #include <vector>
@@ -19,6 +20,7 @@ class World : public runtime::CoreObject
   auto playerPosition() const -> const Eigen::Vector3f &;
 
   auto bullets() const -> const std::vector<Eigen::Vector3f> &;
+  auto enemies() const -> std::vector<Eigen::Vector3f>;
 
   void movePlayer(const Eigen::Vector3f &motion);
   void fire();
@@ -32,10 +34,18 @@ class World : public runtime::CoreObject
   Eigen::Vector3f m_dims{};
 
   std::vector<Eigen::Vector3f> m_bullets{};
-  std::vector<Eigen::Vector3f> m_invaders{};
+  std::vector<Wave> m_waves{};
+
   Eigen::Vector3f m_player{};
 
+  float m_elapsedSinceLastEnemyWave{};
+
   void initialize();
+
+  void maybeSpawnEnemyWave(const float elapsed);
+  void moveEnemies(const float elapsed);
+  void removeOutOfBoundsBullets();
+  void removeInvadingEnemies();
 };
 
 using WorldPtr = std::unique_ptr<World>;
