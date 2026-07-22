@@ -3,6 +3,7 @@
 
 #include "CoreObject.hh"
 #include "FrameData.hh"
+#include "Wave.hh"
 #include <eigen3/Eigen/Eigen>
 #include <memory>
 #include <vector>
@@ -33,16 +34,7 @@ class World : public runtime::CoreObject
   Eigen::Vector3f m_dims{};
 
   std::vector<Eigen::Vector3f> m_bullets{};
-  std::vector<Eigen::Vector3f> m_invaders{};
-
-  int m_lastWaveId{};
-  struct Enemy
-  {
-    int waveId{};
-    float xInit{};
-    Eigen::Vector3f pos{};
-  };
-  std::vector<Enemy> m_enemies{};
+  std::vector<Wave> m_waves{};
 
   Eigen::Vector3f m_player{};
 

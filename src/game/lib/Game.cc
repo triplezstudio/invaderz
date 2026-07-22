@@ -34,7 +34,7 @@ void Game::processSounds(IAudioEngine &engine)
   if (initial)
   {
     initial = false;
-    engine.playOnce(m_mainTheme.id, 1.5f);
+    engine.playOnce(m_mainTheme.id, 0.125f);
   }
 }
 
