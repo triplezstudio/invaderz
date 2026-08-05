@@ -1,10 +1,10 @@
 
 #pragma once
 
-#include "AudioEngine.hh"
+#include <SDL3/SDL.h>
 
 namespace invaderz {
 
-using IAudioEngine = AudioEngine;
+using ITextureLoader = SDL_Renderer;
 
 } // namespace invaderz

@@ -1,20 +1,22 @@
 
 #pragma once
 
-#include "Asset.hh"
+#include "CoreObject.hh"
 #include "Sound.hh"
+#include <atomic>
 #include <memory>
 #include <string_view>
+#include <unordered_map>
 
 namespace invaderz {
 
 using SoundId = int;
 
-class IAudioManager
+class SdlAudioRegistry : public runtime::CoreObject
 {
   public:
-  IAudioManager()          = default;
-  virtual ~IAudioManager() = default;
+  SdlAudioRegistry();
+  virtual ~SdlAudioRegistry() = default;
 
   /// @brief - Registers a new audio file as a usable asset in the project.
   /// The audio file is expected to have a WAV format: anything else will
@@ -22,12 +24,16 @@ class IAudioManager
   /// Once loaded, the sound is available under the returned identifier.
   /// @param filePath - the location of the resource on the filesystem
   /// @return - an identifier for the sound
-  virtual auto registerSound(const std::string_view filePath) -> assets::Asset = 0;
-  virtual void unregister(const assets::Asset &asset)                          = 0;
+  auto registerSound(const std::string_view filePath) -> SoundId;
+  void unregister(const SoundId &sound);
 
-  virtual auto getSound(const SoundId id) const -> assets::Sound & = 0;
+  auto getSound(const SoundId id) const -> assets::Sound &;
+
+  private:
+  std::atomic<SoundId> m_nextId{0};
+  std::unordered_map<SoundId, assets::SoundPtr> m_sounds{};
 };
 
-using IAudioManagerPtr = std::unique_ptr<IAudioManager>;
+using SdlAudioRegistryPtr = std::unique_ptr<SdlAudioRegistry>;
 
 } // namespace invaderz

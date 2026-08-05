@@ -1,21 +1,12 @@
 
 #pragma once
 
-#include "Color.hh"
-#include <eigen3/Eigen/Eigen>
+#include "Renderer.hh"
+#include <memory>
 
 namespace invaderz {
 
-class IRenderer
-{
-  public:
-  IRenderer()          = default;
-  virtual ~IRenderer() = default;
-
-  virtual void renderRectangle(const Eigen::Vector3f &position,
-                               const Eigen::Vector3f &dims,
-                               const Color color)
-    = 0;
-};
+using IRenderer    = Renderer;
+using IRendererPtr = std::unique_ptr<Renderer>;
 
 } // namespace invaderz

@@ -13,10 +13,16 @@ Game::Game(Eigen::Vector3f screenDims)
   initialize(std::move(screenDims));
 }
 
-void Game::loadResources(IAudioManager &manager)
+void Game::loadSounds(IAudioRegistry &registry)
 {
   auto themeFilePath = std::format("{}/cyberpunky_theme.wav", std::getenv("ASSET_FOLDER"));
-  m_mainTheme        = manager.registerSound(themeFilePath);
+  m_mainTheme        = registry.registerSound(themeFilePath);
+}
+
+void Game::loadTextures(ITextureRegistry &registry)
+{
+  auto spaceshipFilePath = std::format("{}/player_ship.png", std::getenv("ASSET_FOLDER"));
+  m_spaceShip            = registry.registerTexture(spaceshipFilePath);
 }
 
 bool Game::update(const FrameData &data)
@@ -34,13 +40,13 @@ void Game::processSounds(IAudioEngine &engine)
   if (initial)
   {
     initial = false;
-    engine.playOnce(m_mainTheme.id, 0.125f);
+    engine.playOnce(m_mainTheme, 0.125f);
   }
 }
 
 namespace {
 // The dimensions are expressed in pixels.
-const Eigen::Vector3f PLAYER_DIMS(32.0f, 32.0f, 0.0f);
+const Eigen::Vector3f PLAYER_DIMS(64.0f, 64.0f, 0.0f);
 const Eigen::Vector3f ENEMY_DIMS(32.0f, 32.0f, 0.0f);
 const Eigen::Vector3f BULLET_DIMS(4.0f, 4.0f, 0.0f);
 } // namespace
@@ -49,9 +55,9 @@ void Game::render(IRenderer &renderer)
 {
   CoordinateConverter converter{m_world->dims(), m_screenDims};
 
-  renderer.renderRectangle(converter.toScreenPos(m_world->playerPosition(), PLAYER_DIMS),
-                           PLAYER_DIMS,
-                           Color::ORANGE);
+  renderer.renderTexture(m_spaceShip,
+                         converter.toScreenPos(m_world->playerPosition(), PLAYER_DIMS),
+                         PLAYER_DIMS);
 
   for (const auto &enemy : m_world->enemies())
   {

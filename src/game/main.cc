@@ -1,9 +1,12 @@
 
-#include "App.hh"
+#include "AudioEngine.hh"
 #include "Game.hh"
 #include "Locator.hh"
-#include "SdlAssetManager.hh"
+#include "Renderer.hh"
+#include "SdlAudioRegistry.hh"
+#include "SdlTextureRegistry.hh"
 #include "StdLogger.hh"
+#include "Window.hh"
 
 int main(int /*argc*/, char * /*argv*/[])
 {
@@ -14,23 +17,30 @@ int main(int /*argc*/, char * /*argv*/[])
   constexpr auto width  = 480;
   constexpr auto height = 880;
 
-  auto manager = std::make_unique<invaderz::SdlAssetManager>();
+  invaderz::Window window(480, 880, "invaderz");
+
+  auto audioRegistry = std::make_unique<invaderz::SdlAudioRegistry>();
+
+  invaderz::IRendererPtr renderer = window.createRenderer();
 
   invaderz::Game game(Eigen::Vector3f(1.0f * width, 1.0f * height, 0.0f));
-  game.loadResources(*manager);
+  game.loadSounds(*audioRegistry);
+  game.loadTextures(renderer->getTextureRegistry());
 
-  invaderz::App app(width, height, std::move(manager));
+  invaderz::AudioEngine audioEngine(std::move(audioRegistry));
 
   bool running = true;
   while (running)
   {
-    auto events = app.pollEvents();
+    auto events = window.pollEvents();
     running     = game.update(events);
-    app.clear();
-    game.processSounds(app);
-    game.render(app);
-    app.update();
-    app.render();
+
+    audioEngine.update();
+    game.processSounds(audioEngine);
+
+    renderer->clear();
+    game.render(*renderer);
+    renderer->render();
   }
 
   return EXIT_SUCCESS;

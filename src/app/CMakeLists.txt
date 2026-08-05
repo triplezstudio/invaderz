@@ -22,9 +22,11 @@ target_include_directories (app_lib PUBLIC
 	)
 
 target_sources (app_lib PRIVATE
-	${CMAKE_CURRENT_SOURCE_DIR}/App.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/AudioEngine.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/InputState.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/Renderer.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/Timer.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/Window.cc
 	)
 
 target_link_libraries (app_lib PUBLIC

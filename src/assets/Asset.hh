@@ -8,6 +8,7 @@ namespace invaderz::assets {
 enum class Type
 {
   SOUND,
+  TEXTURE,
   UNKNOWN
 };
 
