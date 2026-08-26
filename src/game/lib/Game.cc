@@ -39,6 +39,12 @@ void Game::loadTextures(ITextureRegistry &registry)
 
   auto bulletFilePath = std::format("{}/bullet.png", std::getenv("ASSET_FOLDER"));
   m_bullet            = registry.registerTexture(bulletFilePath);
+
+  auto victoryFilePath = std::format("{}/victory_label.png", std::getenv("ASSET_FOLDER"));
+  m_victoryLabel       = registry.registerTexture(victoryFilePath);
+
+  auto lossFilePath = std::format("{}/loss_label.png", std::getenv("ASSET_FOLDER"));
+  m_lossLabel       = registry.registerTexture(lossFilePath);
 }
 
 bool Game::update(const FrameData &data)
@@ -47,6 +53,7 @@ bool Game::update(const FrameData &data)
   {
     if (data.state.anyKeyReleased())
     {
+      info("Transition from welcome screen to game screen");
       m_screen = Screen::GAME;
     }
   }
@@ -58,7 +65,18 @@ bool Game::update(const FrameData &data)
 
     if (m_world->lives() <= 0 || m_world->remainingWaves() <= 0)
     {
+      info("Transition from game screen to end game screen");
       m_screen = Screen::END_GAME;
+    }
+  }
+
+  if (m_screen == Screen::END_GAME)
+  {
+    if (data.state.anyKeyReleased())
+    {
+      info("Transition from end game screen to game screen");
+      initialize(m_screenDims);
+      m_screen = Screen::GAME;
     }
   }
 
@@ -146,6 +164,26 @@ void Game::renderGame(IRenderer &renderer)
   }
 }
 
-void Game::renderEndGameScreen(IRenderer & /*renderer*/) {}
+void Game::renderEndGameScreen(IRenderer &renderer)
+{
+  Eigen::Vector3f titleDimensions(m_screenDims(0), m_screenDims(0), 0.0f);
+  Eigen::Vector3f position(0.0f, 0.0f, 0.0f);
+  renderer.renderTexture(m_title, position, titleDimensions);
+
+  titleDimensions = Eigen::Vector3f(300.0f, 64.0f, 0.0f);
+  position        = Eigen::Vector3f((m_screenDims(0) - 300.0f) / 2.0f, 400.0f, 0.0f);
+
+  auto texture = m_victoryLabel;
+  if (m_world->lives() <= 0)
+  {
+    texture = m_lossLabel;
+  }
+
+  renderer.renderTexture(texture, position, titleDimensions);
+
+  titleDimensions = Eigen::Vector3f(300.0f, 64.0f, 0.0f);
+  position        = Eigen::Vector3f((m_screenDims(0) - 300.0f) / 2.0f, 500.0f, 0.0f);
+  renderer.renderTexture(m_titleLabel, position, titleDimensions);
+}
 
 } // namespace invaderz
