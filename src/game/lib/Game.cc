@@ -23,6 +23,9 @@ void Game::loadTextures(ITextureRegistry &registry)
 {
   auto spaceshipFilePath = std::format("{}/player_ship.png", std::getenv("ASSET_FOLDER"));
   m_spaceShip            = registry.registerTexture(spaceshipFilePath);
+
+  auto enemyShipFilePath = std::format("{}/enemy_ship.png", std::getenv("ASSET_FOLDER"));
+  m_enemyShip            = registry.registerTexture(enemyShipFilePath);
 }
 
 bool Game::update(const FrameData &data)
@@ -61,7 +64,7 @@ void Game::render(IRenderer &renderer)
 
   for (const auto &enemy : m_world->enemies())
   {
-    renderer.renderRectangle(converter.toScreenPos(enemy, ENEMY_DIMS), ENEMY_DIMS, Color::BURGUNDY);
+    renderer.renderTexture(m_enemyShip, converter.toScreenPos(enemy, ENEMY_DIMS), ENEMY_DIMS);
   }
 
   for (const auto &bullet : m_world->bullets())
