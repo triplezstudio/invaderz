@@ -28,6 +28,7 @@ class Game : public runtime::CoreObject
 
   private:
   SoundId m_mainTheme{};
+  TextureId m_background{};
   TextureId m_spaceShip{};
   TextureId m_enemyShip{};
   TextureId m_bullet{};

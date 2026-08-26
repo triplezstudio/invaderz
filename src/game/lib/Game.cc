@@ -22,6 +22,9 @@ void Game::loadSounds(IAudioRegistry &registry)
 
 void Game::loadTextures(ITextureRegistry &registry)
 {
+  auto backgroundFilePath = std::format("{}/star_background.png", std::getenv("ASSET_FOLDER"));
+  m_background            = registry.registerTexture(backgroundFilePath);
+
   auto spaceshipFilePath = std::format("{}/player_ship.png", std::getenv("ASSET_FOLDER"));
   m_spaceShip            = registry.registerTexture(spaceshipFilePath);
 
@@ -54,6 +57,8 @@ void Game::processSounds(IAudioEngine &engine)
 void Game::render(IRenderer &renderer)
 {
   CoordinateConverter converter{m_world->dims(), m_screenDims};
+
+  renderer.renderTexture(m_background, Eigen::Vector3f::Zero(), m_screenDims);
 
   renderer.renderTexture(m_spaceShip,
                          converter.toScreenPos(m_world->playerPosition(), playerDimensions()),
