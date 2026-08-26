@@ -134,6 +134,7 @@ void World::handleCollisions()
 {
   std::deque<std::size_t> bulletsToRemove{};
 
+  // Enemies <-> bullets collisions
   for (std::size_t id = 0u; id < m_bullets.size(); ++id)
   {
     auto bulletRect = rectFromPositionAndDimensions(m_bullets[id], bulletDimensions());
@@ -163,6 +164,30 @@ void World::handleCollisions()
   for (const auto &id : bulletsToRemove)
   {
     m_bullets.erase(m_bullets.begin() + id);
+  }
+
+  // Enemies <-> player collisions
+  auto playerRect = rectFromPositionAndDimensions(m_player, playerDimensions());
+  for (auto &wave : m_level.waves)
+  {
+    std::deque<std::size_t> enemiesToRemove{};
+
+    for (std::size_t idE = 0u; idE < wave.enemies.size(); ++idE)
+    {
+      auto enemyRect = rectFromPositionAndDimensions(wave.enemies[idE].pos, enemyDimensions());
+
+      if (SDL_HasRectIntersectionFloat(&playerRect, &enemyRect))
+      {
+        --m_level.lives;
+        warn("Lost a live!");
+        enemiesToRemove.push_front(idE);
+      }
+    }
+
+    for (const auto &id : enemiesToRemove)
+    {
+      wave.enemies.erase(wave.enemies.begin() + id);
+    }
   }
 }
 
