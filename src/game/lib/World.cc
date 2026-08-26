@@ -4,6 +4,8 @@
 #include "VectorUtils.hh"
 #include <deque>
 
+#include <iostream>
+
 namespace invaderz {
 namespace {
 // The speeds are expressed in pixels per second
@@ -14,16 +16,16 @@ constexpr auto BULLET_SPEED = 800;
 constexpr auto ENEMY_WAVE_INTERVAL = 3.0;
 } // namespace
 
-World::World(Eigen::Vector3f dims)
+World::World(Level level)
   : runtime::CoreObject("world")
-  , m_dims(std::move(dims))
+  , m_level(std::move(level))
 {
   initialize();
 }
 
 auto World::dims() const -> const Eigen::Vector3f &
 {
-  return m_dims;
+  return m_level.dimensions;
 }
 
 auto World::playerPosition() const -> const Eigen::Vector3f &
@@ -40,7 +42,7 @@ auto World::enemies() const -> std::vector<Eigen::Vector3f>
 {
   std::vector<Eigen::Vector3f> out{};
 
-  for (const auto &wave : m_waves)
+  for (const auto &wave : m_level.waves)
   {
     std::transform(wave.enemies.begin(),
                    wave.enemies.end(),
@@ -58,9 +60,9 @@ void World::movePlayer(const Eigen::Vector3f &motion)
   {
     m_player(0) = 0.0f;
   }
-  if (m_player(0) > m_dims(0))
+  if (m_player(0) > m_level.dimensions(0))
   {
-    m_player(0) = m_dims(0);
+    m_player(0) = m_level.dimensions(0);
   }
 }
 
@@ -69,8 +71,24 @@ void World::fire()
   m_bullets.emplace_back(m_player);
 }
 
+namespace {
+constexpr auto REASONABLE_FRAME_TIME = 100.0f;
+}
+
 void World::update(const float elapsed)
 {
+  // The first frame might receive a very long elapsed time
+  // which breaks the logic relying on it being more or less
+  // consistent and small.
+  // This logic helps to ignore outliers where the elapsed
+  // time since the last frame is too big.
+  if (elapsed > REASONABLE_FRAME_TIME)
+  {
+    warn("Received elapsed time " + std::to_string(elapsed) + " bigger than threshold "
+         + std::to_string(REASONABLE_FRAME_TIME) + ", ignoring update");
+    return;
+  }
+
   Eigen::Vector3f motion(0, elapsed * BULLET_SPEED, 0.0f);
 
   for (auto &bullet : m_bullets)
@@ -79,7 +97,6 @@ void World::update(const float elapsed)
   }
 
   removeOutOfBoundsBullets();
-  maybeSpawnEnemyWave(elapsed);
   moveEnemies(elapsed);
   handleCollisions();
   removeInvadingEnemies();
@@ -88,29 +105,15 @@ void World::update(const float elapsed)
 
 void World::initialize()
 {
-  m_player = Eigen::Vector3f(m_dims(0) / 2.0f, 0.0f, 0.0f);
+  m_player = Eigen::Vector3f(m_level.dimensions(0) / 2.0f, 0.0f, 0.0f);
   info("player pos " + str(m_player));
-}
-
-void World::maybeSpawnEnemyWave(const float elapsed)
-{
-  m_elapsedSinceLastEnemyWave += elapsed;
-
-  if (m_elapsedSinceLastEnemyWave < ENEMY_WAVE_INTERVAL)
-  {
-    return;
-  }
-
-  m_elapsedSinceLastEnemyWave = 0.0f;
-
-  m_waves.emplace_back(m_dims);
 }
 
 void World::moveEnemies(const float elapsed)
 {
-  for (auto &wave : m_waves)
+  for (auto &wave : m_level.waves)
   {
-    wave.move(elapsed, m_dims);
+    wave.move(elapsed, m_level.dimensions);
   }
 }
 
@@ -135,7 +138,7 @@ void World::handleCollisions()
   {
     auto bulletRect = rectFromPositionAndDimensions(m_bullets[id], bulletDimensions());
 
-    for (auto &wave : m_waves)
+    for (auto &wave : m_level.waves)
     {
       std::deque<std::size_t> enemiesToRemove{};
 
@@ -165,12 +168,14 @@ void World::handleCollisions()
 
 void World::removeOutOfBoundsBullets()
 {
-  std::erase_if(m_bullets, [this](const Eigen::Vector3f &bullet) { return bullet(1) > m_dims(1); });
+  std::erase_if(m_bullets, [this](const Eigen::Vector3f &bullet) {
+    return bullet(1) > m_level.dimensions(1);
+  });
 }
 
 void World::removeInvadingEnemies()
 {
-  for (auto &wave : m_waves)
+  for (auto &wave : m_level.waves)
   {
     wave.cleanInvadingEnemies();
   }
@@ -178,7 +183,7 @@ void World::removeInvadingEnemies()
 
 void World::removeEmptyWaves()
 {
-  std::erase_if(m_waves, [this](const Wave &wave) { return wave.empty(); });
+  std::erase_if(m_level.waves, [this](const Wave &wave) { return wave.empty(); });
 }
 
 } // namespace invaderz

@@ -10,7 +10,7 @@ struct Wave
 {
   std::vector<Enemy> enemies{};
 
-  Wave(const Eigen::Vector3f &worldDims);
+  Wave(const Eigen::Vector3f &worldDims, const float yOffset);
   ~Wave() = default;
 
   bool empty() const;

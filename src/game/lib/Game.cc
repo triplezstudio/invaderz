@@ -75,11 +75,18 @@ void Game::render(IRenderer &renderer)
   }
 }
 
+namespace {
+constexpr auto PLAYER_LIVES = 15;
+constexpr auto WAVES_COUNT  = 5;
+} // namespace
+
 void Game::initialize(Eigen::Vector3f screenDims)
 {
   Eigen::Vector3f worldDims = screenDims - playerDimensions();
-  m_world                   = std::make_unique<World>(std::move(worldDims));
-  m_playerUpdater           = std::make_unique<PlayerUpdater>(*m_world);
+
+  Level level(PLAYER_LIVES, WAVES_COUNT, std::move(worldDims));
+  m_world         = std::make_unique<World>(std::move(level));
+  m_playerUpdater = std::make_unique<PlayerUpdater>(*m_world);
 }
 
 } // namespace invaderz

@@ -40,7 +40,7 @@ auto calculateXOffset(const float y, const Eigen::Vector3f dims) -> float
 }
 } // namespace
 
-Wave::Wave(const Eigen::Vector3f &worldDims)
+Wave::Wave(const Eigen::Vector3f &worldDims, const float yOffset)
 {
   const auto waveSpan = ENEMY_WAVE_PERCENTAGE * worldDims(0);
   const auto xStart   = (worldDims(0) - waveSpan) / 2.0f;
@@ -49,7 +49,7 @@ Wave::Wave(const Eigen::Vector3f &worldDims)
   for (int i = 0; i < ENEMY_WAVE_COUNT; ++i)
   {
     const auto x = xStart + i * interval;
-    const auto y = worldDims(1);
+    const auto y = worldDims(1) + yOffset;
 
     Enemy enemy{
       .xInit = x,

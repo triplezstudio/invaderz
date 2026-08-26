@@ -3,6 +3,7 @@
 
 #include "CoreObject.hh"
 #include "FrameData.hh"
+#include "Level.hh"
 #include "Wave.hh"
 #include <eigen3/Eigen/Eigen>
 #include <memory>
@@ -13,7 +14,7 @@ namespace invaderz {
 class World : public runtime::CoreObject
 {
   public:
-  World(Eigen::Vector3f dims);
+  World(Level level);
   ~World() override = default;
 
   auto dims() const -> const Eigen::Vector3f &;
@@ -31,18 +32,15 @@ class World : public runtime::CoreObject
   void update(const float elapsed);
 
   private:
-  Eigen::Vector3f m_dims{};
-
-  std::vector<Eigen::Vector3f> m_bullets{};
-  std::vector<Wave> m_waves{};
+  Level m_level;
 
   Eigen::Vector3f m_player{};
+  std::vector<Eigen::Vector3f> m_bullets{};
 
   float m_elapsedSinceLastEnemyWave{};
 
   void initialize();
 
-  void maybeSpawnEnemyWave(const float elapsed);
   void moveEnemies(const float elapsed);
   void handleCollisions();
   void removeOutOfBoundsBullets();
