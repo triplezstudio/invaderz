@@ -71,7 +71,8 @@ void Renderer::renderRectangle(const Eigen::Vector3f &position,
 
 void Renderer::renderTexture(const TextureId textureId,
                              const Eigen::Vector3f &position,
-                             const Eigen::Vector3f &dims)
+                             const Eigen::Vector3f &dims,
+                             const float angle)
 {
   auto &texture = m_registry->getTexture(textureId);
 
@@ -81,7 +82,13 @@ void Renderer::renderTexture(const TextureId textureId,
     .w = dims(0),
     .h = dims(1),
   };
-  SDL_RenderTexture(m_renderer, texture.getRaw(), nullptr, &rect);
+  SDL_RenderTextureRotated(m_renderer,
+                           texture.getRaw(),
+                           nullptr,
+                           &rect,
+                           angle,
+                           nullptr,
+                           SDL_FLIP_NONE);
 }
 
 } // namespace invaderz

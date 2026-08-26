@@ -30,6 +30,7 @@ class Game : public runtime::CoreObject
   SoundId m_mainTheme{};
   TextureId m_spaceShip{};
   TextureId m_enemyShip{};
+  TextureId m_bullet{};
 
   Eigen::Vector3f m_screenDims{};
   WorldPtr m_world{};

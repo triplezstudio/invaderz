@@ -26,7 +26,8 @@ class Renderer
 
   void renderTexture(const TextureId textureId,
                      const Eigen::Vector3f &position,
-                     const Eigen::Vector3f &dims);
+                     const Eigen::Vector3f &dims,
+                     const float angle = 0.0f);
 
   private:
   friend class Window;

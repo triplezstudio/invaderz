@@ -26,6 +26,9 @@ void Game::loadTextures(ITextureRegistry &registry)
 
   auto enemyShipFilePath = std::format("{}/enemy_ship.png", std::getenv("ASSET_FOLDER"));
   m_enemyShip            = registry.registerTexture(enemyShipFilePath);
+
+  auto bulletFilePath = std::format("{}/bullet.png", std::getenv("ASSET_FOLDER"));
+  m_bullet            = registry.registerTexture(bulletFilePath);
 }
 
 bool Game::update(const FrameData &data)
@@ -51,7 +54,7 @@ namespace {
 // The dimensions are expressed in pixels.
 const Eigen::Vector3f PLAYER_DIMS(64.0f, 64.0f, 0.0f);
 const Eigen::Vector3f ENEMY_DIMS(32.0f, 32.0f, 0.0f);
-const Eigen::Vector3f BULLET_DIMS(4.0f, 4.0f, 0.0f);
+const Eigen::Vector3f BULLET_DIMS(16.0f, 16.0f, 0.0f);
 } // namespace
 
 void Game::render(IRenderer &renderer)
@@ -69,9 +72,10 @@ void Game::render(IRenderer &renderer)
 
   for (const auto &bullet : m_world->bullets())
   {
-    renderer.renderRectangle(converter.toScreenPos(bullet, BULLET_DIMS),
-                             BULLET_DIMS,
-                             Color::TURQUOISE);
+    renderer.renderTexture(m_bullet,
+                           converter.toScreenPos(bullet, BULLET_DIMS),
+                           BULLET_DIMS,
+                           -90.0f);
   }
 }
 
