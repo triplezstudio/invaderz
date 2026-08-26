@@ -33,6 +33,16 @@ auto World::playerPosition() const -> const Eigen::Vector3f &
   return m_player;
 }
 
+auto World::lives() const -> int
+{
+  return m_level.lives;
+}
+
+auto World::remainingWaves() const -> int
+{
+  return static_cast<int>(m_level.waves.size());
+}
+
 auto World::bullets() const -> const std::vector<Eigen::Vector3f> &
 {
   return m_bullets;

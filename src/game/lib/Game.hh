@@ -46,7 +46,7 @@ class Game : public runtime::CoreObject
 
   void renderWelcomeScreen(IRenderer &renderer);
   void renderGame(IRenderer &renderer);
-  void renderGameOverScreen(IRenderer &renderer);
+  void renderEndGameScreen(IRenderer &renderer);
 };
 
 } // namespace invaderz

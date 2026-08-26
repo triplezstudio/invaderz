@@ -55,6 +55,11 @@ bool Game::update(const FrameData &data)
   {
     m_playerUpdater->update(data);
     m_world->update(data.elapsed);
+
+    if (m_world->lives() <= 0 || m_world->remainingWaves() <= 0)
+    {
+      m_screen = Screen::END_GAME;
+    }
   }
 
   const auto quit = data.quit || data.state.held(keyboard::ESCAPE);
@@ -81,8 +86,8 @@ void Game::render(IRenderer &renderer)
     case Screen::GAME:
       renderGame(renderer);
       break;
-    case Screen::GAME_OVER:
-      renderGameOverScreen(renderer);
+    case Screen::END_GAME:
+      renderEndGameScreen(renderer);
       break;
     default:
       error("Unsupported screen " + std::to_string(static_cast<int>(m_screen)));
@@ -141,6 +146,6 @@ void Game::renderGame(IRenderer &renderer)
   }
 }
 
-void Game::renderGameOverScreen(IRenderer & /*renderer*/) {}
+void Game::renderEndGameScreen(IRenderer & /*renderer*/) {}
 
 } // namespace invaderz

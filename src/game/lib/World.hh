@@ -19,6 +19,8 @@ class World : public runtime::CoreObject
 
   auto dims() const -> const Eigen::Vector3f &;
   auto playerPosition() const -> const Eigen::Vector3f &;
+  auto lives() const -> int;
+  auto remainingWaves() const -> int;
 
   auto bullets() const -> const std::vector<Eigen::Vector3f> &;
   auto enemies() const -> std::vector<Eigen::Vector3f>;
@@ -36,8 +38,6 @@ class World : public runtime::CoreObject
 
   Eigen::Vector3f m_player{};
   std::vector<Eigen::Vector3f> m_bullets{};
-
-  float m_elapsedSinceLastEnemyWave{};
 
   void initialize();
 
