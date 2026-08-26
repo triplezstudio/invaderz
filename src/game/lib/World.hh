@@ -44,8 +44,10 @@ class World : public runtime::CoreObject
 
   void maybeSpawnEnemyWave(const float elapsed);
   void moveEnemies(const float elapsed);
+  void handleCollisions();
   void removeOutOfBoundsBullets();
   void removeInvadingEnemies();
+  void removeEmptyWaves();
 };
 
 using WorldPtr = std::unique_ptr<World>;

@@ -1,8 +1,8 @@
 
 #include "World.hh"
+#include "Constants.hh"
 #include "VectorUtils.hh"
-
-#include <iostream>
+#include <deque>
 
 namespace invaderz {
 namespace {
@@ -81,7 +81,9 @@ void World::update(const float elapsed)
   removeOutOfBoundsBullets();
   maybeSpawnEnemyWave(elapsed);
   moveEnemies(elapsed);
+  handleCollisions();
   removeInvadingEnemies();
+  removeEmptyWaves();
 }
 
 void World::initialize()
@@ -112,6 +114,55 @@ void World::moveEnemies(const float elapsed)
   }
 }
 
+namespace {
+auto rectFromPositionAndDimensions(const Eigen::Vector3f &position,
+                                   const Eigen::Vector3f &dimensions) -> SDL_FRect
+{
+  return SDL_FRect{
+    .x = position(0) - dimensions(0) / 2.0f,
+    .y = position(1) - dimensions(1) / 2.0f,
+    .w = dimensions(0),
+    .h = dimensions(1),
+  };
+}
+} // namespace
+
+void World::handleCollisions()
+{
+  std::deque<std::size_t> bulletsToRemove{};
+
+  for (std::size_t id = 0u; id < m_bullets.size(); ++id)
+  {
+    auto bulletRect = rectFromPositionAndDimensions(m_bullets[id], bulletDimensions());
+
+    for (auto &wave : m_waves)
+    {
+      std::deque<std::size_t> enemiesToRemove{};
+
+      for (std::size_t idE = 0u; idE < wave.enemies.size(); ++idE)
+      {
+        auto enemyRect = rectFromPositionAndDimensions(wave.enemies[idE].pos, enemyDimensions());
+
+        if (SDL_HasRectIntersectionFloat(&bulletRect, &enemyRect))
+        {
+          bulletsToRemove.push_front(id);
+          enemiesToRemove.push_front(idE);
+        }
+      }
+
+      for (const auto &id : enemiesToRemove)
+      {
+        wave.enemies.erase(wave.enemies.begin() + id);
+      }
+    }
+  }
+
+  for (const auto &id : bulletsToRemove)
+  {
+    m_bullets.erase(m_bullets.begin() + id);
+  }
+}
+
 void World::removeOutOfBoundsBullets()
 {
   std::erase_if(m_bullets, [this](const Eigen::Vector3f &bullet) { return bullet(1) > m_dims(1); });
@@ -123,6 +174,11 @@ void World::removeInvadingEnemies()
   {
     wave.cleanInvadingEnemies();
   }
+}
+
+void World::removeEmptyWaves()
+{
+  std::erase_if(m_waves, [this](const Wave &wave) { return wave.empty(); });
 }
 
 } // namespace invaderz

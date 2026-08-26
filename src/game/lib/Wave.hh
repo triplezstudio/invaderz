@@ -13,6 +13,8 @@ struct Wave
   Wave(const Eigen::Vector3f &worldDims);
   ~Wave() = default;
 
+  bool empty() const;
+
   void move(const float elapsed, const Eigen::Vector3f &worldDims);
   void cleanInvadingEnemies();
 };

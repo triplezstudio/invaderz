@@ -59,6 +59,11 @@ Wave::Wave(const Eigen::Vector3f &worldDims)
   }
 }
 
+bool Wave::empty() const
+{
+  return enemies.empty();
+}
+
 void Wave::move(const float elapsed, const Eigen::Vector3f &worldDims)
 {
   for (auto &enemy : enemies)

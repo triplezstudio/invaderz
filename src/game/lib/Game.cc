@@ -1,5 +1,6 @@
 
 #include "Game.hh"
+#include "Constants.hh"
 #include "CoordinateConverter.hh"
 #include <cstdlib>
 #include <format>
@@ -50,38 +51,33 @@ void Game::processSounds(IAudioEngine &engine)
   }
 }
 
-namespace {
-// The dimensions are expressed in pixels.
-const Eigen::Vector3f PLAYER_DIMS(64.0f, 64.0f, 0.0f);
-const Eigen::Vector3f ENEMY_DIMS(32.0f, 32.0f, 0.0f);
-const Eigen::Vector3f BULLET_DIMS(16.0f, 16.0f, 0.0f);
-} // namespace
-
 void Game::render(IRenderer &renderer)
 {
   CoordinateConverter converter{m_world->dims(), m_screenDims};
 
   renderer.renderTexture(m_spaceShip,
-                         converter.toScreenPos(m_world->playerPosition(), PLAYER_DIMS),
-                         PLAYER_DIMS);
+                         converter.toScreenPos(m_world->playerPosition(), playerDimensions()),
+                         playerDimensions());
 
   for (const auto &enemy : m_world->enemies())
   {
-    renderer.renderTexture(m_enemyShip, converter.toScreenPos(enemy, ENEMY_DIMS), ENEMY_DIMS);
+    renderer.renderTexture(m_enemyShip,
+                           converter.toScreenPos(enemy, enemyDimensions()),
+                           enemyDimensions());
   }
 
   for (const auto &bullet : m_world->bullets())
   {
     renderer.renderTexture(m_bullet,
-                           converter.toScreenPos(bullet, BULLET_DIMS),
-                           BULLET_DIMS,
+                           converter.toScreenPos(bullet, bulletDimensions()),
+                           bulletDimensions(),
                            -90.0f);
   }
 }
 
 void Game::initialize(Eigen::Vector3f screenDims)
 {
-  Eigen::Vector3f worldDims = screenDims - PLAYER_DIMS;
+  Eigen::Vector3f worldDims = screenDims - playerDimensions();
   m_world                   = std::make_unique<World>(std::move(worldDims));
   m_playerUpdater           = std::make_unique<PlayerUpdater>(*m_world);
 }
