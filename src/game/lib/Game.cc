@@ -22,6 +22,12 @@ void Game::loadSounds(IAudioRegistry &registry)
 
 void Game::loadTextures(ITextureRegistry &registry)
 {
+  auto titleFilePath = std::format("{}/title_screen.png", std::getenv("ASSET_FOLDER"));
+  m_title            = registry.registerTexture(titleFilePath);
+
+  auto titleLabelFilePath = std::format("{}/title_label.png", std::getenv("ASSET_FOLDER"));
+  m_titleLabel            = registry.registerTexture(titleLabelFilePath);
+
   auto backgroundFilePath = std::format("{}/star_background.png", std::getenv("ASSET_FOLDER"));
   m_background            = registry.registerTexture(backgroundFilePath);
 
@@ -37,8 +43,19 @@ void Game::loadTextures(ITextureRegistry &registry)
 
 bool Game::update(const FrameData &data)
 {
-  m_playerUpdater->update(data);
-  m_world->update(data.elapsed);
+  if (m_screen == Screen::WELCOME)
+  {
+    if (data.state.anyKeyReleased())
+    {
+      m_screen = Screen::GAME;
+    }
+  }
+
+  if (m_screen == Screen::GAME)
+  {
+    m_playerUpdater->update(data);
+    m_world->update(data.elapsed);
+  }
 
   const auto quit = data.quit || data.state.held(keyboard::ESCAPE);
   return !quit;
@@ -56,9 +73,53 @@ void Game::processSounds(IAudioEngine &engine)
 
 void Game::render(IRenderer &renderer)
 {
-  CoordinateConverter converter{m_world->dims(), m_screenDims};
+  switch (m_screen)
+  {
+    case Screen::WELCOME:
+      renderWelcomeScreen(renderer);
+      break;
+    case Screen::GAME:
+      renderGame(renderer);
+      break;
+    case Screen::GAME_OVER:
+      renderGameOverScreen(renderer);
+      break;
+    default:
+      error("Unsupported screen " + std::to_string(static_cast<int>(m_screen)));
+  }
+}
 
+namespace {
+constexpr auto PLAYER_LIVES = 15;
+constexpr auto WAVES_COUNT  = 5;
+} // namespace
+
+void Game::initialize(Eigen::Vector3f screenDims)
+{
+  Eigen::Vector3f worldDims = screenDims - playerDimensions();
+
+  Level level(PLAYER_LIVES, WAVES_COUNT, std::move(worldDims));
+  m_world         = std::make_unique<World>(std::move(level));
+  m_playerUpdater = std::make_unique<PlayerUpdater>(*m_world);
+}
+
+void Game::renderWelcomeScreen(IRenderer &renderer)
+{
+  Eigen::Vector3f titleDimensions(m_screenDims(0), m_screenDims(0), 0.0f);
+  Eigen::Vector3f position(0.0f, 0.0f, 0.0f);
+  renderer.renderTexture(m_title, position, titleDimensions);
+
+  // The image has a size of 64 pixels so we can just hard code it.
+  titleDimensions = Eigen::Vector3f(300.0f, 64.0f, 0.0f);
+  position        = Eigen::Vector3f((m_screenDims(0) - 300.0f) / 2.0f, 400.0f, 0.0f);
+  renderer.renderTexture(m_titleLabel, position, titleDimensions);
+}
+
+void Game::renderGame(IRenderer &renderer)
+{
   renderer.renderTexture(m_background, Eigen::Vector3f::Zero(), m_screenDims);
+
+  CoordinateConverter converter{m_world->dims(), m_screenDims};
 
   renderer.renderTexture(m_spaceShip,
                          converter.toScreenPos(m_world->playerPosition(), playerDimensions()),
@@ -80,18 +141,6 @@ void Game::render(IRenderer &renderer)
   }
 }
 
-namespace {
-constexpr auto PLAYER_LIVES = 15;
-constexpr auto WAVES_COUNT  = 5;
-} // namespace
-
-void Game::initialize(Eigen::Vector3f screenDims)
-{
-  Eigen::Vector3f worldDims = screenDims - playerDimensions();
-
-  Level level(PLAYER_LIVES, WAVES_COUNT, std::move(worldDims));
-  m_world         = std::make_unique<World>(std::move(level));
-  m_playerUpdater = std::make_unique<PlayerUpdater>(*m_world);
-}
+void Game::renderGameOverScreen(IRenderer & /*renderer*/) {}
 
 } // namespace invaderz

@@ -8,6 +8,7 @@
 #include "IRenderer.hh"
 #include "ITextureRegistry.hh"
 #include "PlayerUpdater.hh"
+#include "Screen.hh"
 #include "World.hh"
 #include <eigen3/Eigen/Eigen>
 
@@ -27,7 +28,11 @@ class Game : public runtime::CoreObject
   void render(IRenderer &renderer);
 
   private:
+  Screen m_screen{Screen::WELCOME};
+
   SoundId m_mainTheme{};
+  TextureId m_title{};
+  TextureId m_titleLabel{};
   TextureId m_background{};
   TextureId m_spaceShip{};
   TextureId m_enemyShip{};
@@ -38,6 +43,10 @@ class Game : public runtime::CoreObject
   PlayerUpdaterPtr m_playerUpdater{};
 
   void initialize(Eigen::Vector3f screenDims);
+
+  void renderWelcomeScreen(IRenderer &renderer);
+  void renderGame(IRenderer &renderer);
+  void renderGameOverScreen(IRenderer &renderer);
 };
 
 } // namespace invaderz

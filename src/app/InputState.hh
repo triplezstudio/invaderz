@@ -23,6 +23,8 @@ class InputState
   bool held(const keyboard::Keys key) const;
   bool released(const keyboard::Keys key) const;
 
+  bool anyKeyReleased() const;
+
   private:
   float m_mPosX{0.0f};
   float m_mPosY{0.0f};

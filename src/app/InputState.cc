@@ -1,7 +1,6 @@
 
 #include "InputState.hh"
-
-#include <iostream>
+#include <algorithm>
 
 namespace invaderz {
 
@@ -44,6 +43,13 @@ bool InputState::held(const keyboard::Keys key) const
 bool InputState::released(const keyboard::Keys key) const
 {
   return keyboard::RELEASED == m_keys[key];
+}
+
+bool InputState::anyKeyReleased() const
+{
+  return std::any_of(m_keys.begin(), m_keys.end(), [](const invaderz::keyboard::State &state) {
+    return state == keyboard::RELEASED;
+  });
 }
 
 namespace {
