@@ -24,6 +24,13 @@ Font::~Font()
   TTF_CloseFont(m_font);
 }
 
+auto Font::getTextSize(const std::string &text) const -> Eigen::Vector2i
+{
+  Eigen::Vector2i out = Eigen::Vector2i::Zero();
+  TTF_GetStringSize(m_font, text.c_str(), text.size(), &out(0), &out(1));
+  return out;
+}
+
 auto Font::renderText(const std::string &text) -> TTF_Text *
 {
   const auto maybeText = m_cache.find(text);

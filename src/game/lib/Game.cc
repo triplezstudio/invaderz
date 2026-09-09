@@ -25,9 +25,6 @@ void Game::loadTextures(ITextureRegistry &registry)
   auto titleFilePath = std::format("{}/title_screen.png", std::getenv("ASSET_FOLDER"));
   m_title            = registry.registerTexture(titleFilePath);
 
-  auto titleLabelFilePath = std::format("{}/title_label.png", std::getenv("ASSET_FOLDER"));
-  m_titleLabel            = registry.registerTexture(titleLabelFilePath);
-
   auto backgroundFilePath = std::format("{}/star_background.png", std::getenv("ASSET_FOLDER"));
   m_background            = registry.registerTexture(backgroundFilePath);
 
@@ -132,17 +129,21 @@ void Game::initialize(Eigen::Vector3f screenDims)
   m_playerUpdater = std::make_unique<PlayerUpdater>(*m_world);
 }
 
+namespace {
+constexpr auto TITLE_TEXT = "Press any key to continue";
+}
+
 void Game::renderWelcomeScreen(IRenderer &renderer)
 {
   Eigen::Vector3f titleDimensions(m_screenDims(0), m_screenDims(0), 0.0f);
   Eigen::Vector3f position(0.0f, 0.0f, 0.0f);
   renderer.renderTexture(m_title, position, titleDimensions);
 
-  // The image has a size of 64 pixels so we can just hard code it.
-  titleDimensions = Eigen::Vector3f(300.0f, 64.0f, 0.0f);
-  position        = Eigen::Vector3f((m_screenDims(0) - 300.0f) / 2.0f, 400.0f, 0.0f);
-  // renderer.renderTexture(m_titleLabel, position, titleDimensions);
-  renderer.renderText(m_font, "Press any key to continue", position);
+  const auto &font          = renderer.getFontRegistry().getFont(m_font);
+  const auto textDimensions = font.getTextSize(TITLE_TEXT);
+  position = Eigen::Vector3f((m_screenDims(0) - textDimensions(0)) / 2.0f, 400.0f, 0.0f);
+
+  renderer.renderText(m_font, TITLE_TEXT, position);
 }
 
 void Game::renderGame(IRenderer &renderer)
