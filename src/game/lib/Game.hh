@@ -5,6 +5,7 @@
 #include "FrameData.hh"
 #include "IAudioEngine.hh"
 #include "IAudioRegistry.hh"
+#include "IFontRegistry.hh"
 #include "IRenderer.hh"
 #include "ITextureRegistry.hh"
 #include "PlayerUpdater.hh"
@@ -22,6 +23,7 @@ class Game : public runtime::CoreObject
 
   void loadSounds(IAudioRegistry &registry);
   void loadTextures(ITextureRegistry &registry);
+  void loadFonts(IFontRegistry &registry);
 
   bool update(const FrameData &data);
   void processSounds(IAudioEngine &engine);

@@ -16,6 +16,8 @@ auto str(const Type &type) -> std::string
       return "sound";
     case Type::TEXTURE:
       return "texture";
+    case Type::FONT:
+      return "font";
     case Type::UNKNOWN:
       return "unknown";
     default:

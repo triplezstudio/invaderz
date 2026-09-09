@@ -9,6 +9,7 @@ enum class Type
 {
   SOUND,
   TEXTURE,
+  FONT,
   UNKNOWN
 };
 

@@ -1,7 +1,5 @@
 
 #include "SdlAudioRegistry.hh"
-#include "SdlException.hh"
-#include <SDL3/SDL.h>
 
 namespace invaderz {
 

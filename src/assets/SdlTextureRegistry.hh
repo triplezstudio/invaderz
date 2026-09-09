@@ -18,12 +18,6 @@ class SdlTextureRegistry : public runtime::CoreObject
   SdlTextureRegistry(ITextureLoader *loader);
   virtual ~SdlTextureRegistry() = default;
 
-  /// @brief - Registers a new audio file as a usable asset in the project.
-  /// The audio file is expected to have a WAV format: anything else will
-  /// lead to undefined behavior.
-  /// Once loaded, the texture is available under the returned identifier.
-  /// @param filePath - the location of the resource on the filesystem
-  /// @return - an identifier for the texture
   auto registerTexture(const std::string_view filePath) -> TextureId;
   void unregister(const TextureId &texture);
 

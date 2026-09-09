@@ -47,6 +47,8 @@ void Game::loadTextures(ITextureRegistry &registry)
   m_lossLabel       = registry.registerTexture(lossFilePath);
 }
 
+void Game::loadFonts(IFontRegistry & /*registry*/) {}
+
 bool Game::update(const FrameData &data)
 {
   if (m_screen == Screen::WELCOME)

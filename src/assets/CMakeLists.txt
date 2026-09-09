@@ -13,7 +13,9 @@ target_include_directories (assets_lib PUBLIC
 
 target_sources (assets_lib PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/Asset.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/Font.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/SdlAudioRegistry.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/SdlFontRegistry.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/SdlTextureRegistry.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/Sound.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/Texture.cc
