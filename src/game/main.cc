@@ -21,14 +21,13 @@ int main(int /*argc*/, char * /*argv*/[])
   invaderz::Window window(480, 880, "invaderz");
 
   auto audioRegistry = std::make_unique<invaderz::SdlAudioRegistry>();
-  auto fontRegistry  = std::make_unique<invaderz::SdlFontRegistry>();
 
   invaderz::IRendererPtr renderer = window.createRenderer();
 
   invaderz::Game game(Eigen::Vector3f(1.0f * width, 1.0f * height, 0.0f));
   game.loadSounds(*audioRegistry);
   game.loadTextures(renderer->getTextureRegistry());
-  game.loadFonts(*fontRegistry);
+  game.loadFonts(renderer->getFontRegistry());
 
   invaderz::AudioEngine audioEngine(std::move(audioRegistry));
 

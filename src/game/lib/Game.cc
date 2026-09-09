@@ -47,7 +47,11 @@ void Game::loadTextures(ITextureRegistry &registry)
   m_lossLabel       = registry.registerTexture(lossFilePath);
 }
 
-void Game::loadFonts(IFontRegistry & /*registry*/) {}
+void Game::loadFonts(IFontRegistry &registry)
+{
+  auto filePath = std::format("{}/ArcadeClassic.ttf", std::getenv("ASSET_FOLDER"));
+  m_font        = registry.registerFont(filePath, 30);
+}
 
 bool Game::update(const FrameData &data)
 {
@@ -137,7 +141,8 @@ void Game::renderWelcomeScreen(IRenderer &renderer)
   // The image has a size of 64 pixels so we can just hard code it.
   titleDimensions = Eigen::Vector3f(300.0f, 64.0f, 0.0f);
   position        = Eigen::Vector3f((m_screenDims(0) - 300.0f) / 2.0f, 400.0f, 0.0f);
-  renderer.renderTexture(m_titleLabel, position, titleDimensions);
+  // renderer.renderTexture(m_titleLabel, position, titleDimensions);
+  renderer.renderText(m_font, "Press any key to continue", position);
 }
 
 void Game::renderGame(IRenderer &renderer)

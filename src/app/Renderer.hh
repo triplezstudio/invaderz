@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Color.hh"
+#include "IFontRegistry.hh"
 #include "ITextureRegistry.hh"
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -17,6 +18,7 @@ class Renderer
   virtual ~Renderer();
 
   auto getTextureRegistry() const -> ITextureRegistry &;
+  auto getFontRegistry() const -> IFontRegistry &;
 
   void clear();
   void render();
@@ -30,16 +32,19 @@ class Renderer
                      const Eigen::Vector3f &dims,
                      const float angle = 0.0f);
 
-  void renderText(const std::string &text);
+  void renderText(const FontId fontId, const std::string &text, const Eigen::Vector3f &position);
 
   private:
   friend class Window;
 
-  Renderer(SDL_Renderer *renderer, ITextureRegistryPtr registry);
+  Renderer(SDL_Renderer *renderer,
+           ITextureRegistryPtr textureRegistry,
+           IFontRegistryPtr fontRegistry);
 
   SDL_Renderer *m_renderer{nullptr};
   TTF_TextEngine *m_textEngine{nullptr};
-  ITextureRegistryPtr m_registry{};
+  ITextureRegistryPtr m_textureRegistry{};
+  IFontRegistryPtr m_fontRegistry{};
 
   void createTextEngine();
 };

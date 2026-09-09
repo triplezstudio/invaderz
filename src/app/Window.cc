@@ -55,8 +55,10 @@ auto Window::pollEvents() -> FrameData
 
 auto Window::createRenderer() const -> IRendererPtr
 {
-  auto registry = std::make_unique<invaderz::SdlTextureRegistry>(m_renderer);
-  return std::unique_ptr<Renderer>(new Renderer(m_renderer, std::move(registry)));
+  auto textureRegistry = std::make_unique<invaderz::SdlTextureRegistry>(m_renderer);
+  auto fontRegistry    = std::make_unique<invaderz::SdlFontRegistry>();
+  return std::unique_ptr<Renderer>(
+    new Renderer(m_renderer, std::move(textureRegistry), std::move(fontRegistry)));
 }
 
 void Window::initialize(const int width, const int height, const std::string_view title)
