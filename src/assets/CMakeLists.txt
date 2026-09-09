@@ -23,6 +23,7 @@ target_link_libraries (assets_lib PUBLIC
 	invaderz-interface-library
 	runtime_lib
 	SDL3::SDL3
+	SDL3_ttf::SDL3_ttf
 	)
 
 if (WIN32)

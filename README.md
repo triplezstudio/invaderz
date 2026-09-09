@@ -8,6 +8,7 @@ This project aims at creating a small clone of the famouns [Space Invaders](http
 
 First make sure to install dependencies locally:
 * [SDL3](https://wiki.libsdl.org/SDL3/FrontPage)
+* [SDL_ttf](https://wiki.libsdl.org/SDL3_ttf/FrontPage)
 * [Eigen3](https://libeigen.gitlab.io/eigen/docs-5.0/GettingStarted.html)
 
 The repository can then be cloned:

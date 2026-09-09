@@ -34,5 +34,6 @@ target_link_libraries (app_lib PUBLIC
 	runtime_lib
 	assets_lib
 	SDL3::SDL3
+	SDL3_ttf::SDL3_ttf
 	Eigen3::Eigen
 	)

@@ -16,6 +16,13 @@ Renderer::Renderer(SDL_Renderer *renderer, ITextureRegistryPtr registry)
   {
     throw std::invalid_argument("Expected non null registry");
   }
+
+  createTextEngine();
+}
+
+Renderer::~Renderer()
+{
+  TTF_DestroyRendererTextEngine(m_textEngine);
 }
 
 auto Renderer::getTextureRegistry() const -> ITextureRegistry &
@@ -89,6 +96,22 @@ void Renderer::renderTexture(const TextureId textureId,
                            angle,
                            nullptr,
                            SDL_FLIP_NONE);
+}
+
+void Renderer::renderText(const std::string &text)
+{
+  SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+  SDL_RenderDebugText(m_renderer, 10, 10, text.c_str());
+  SDL_SetRenderDrawColor(m_renderer, 32, 32, 32, 255);
+}
+
+void Renderer::createTextEngine()
+{
+  m_textEngine = TTF_CreateRendererTextEngine(m_renderer);
+  if (m_textEngine == nullptr)
+  {
+    throw runtime::SdlException("Failed to initialize text renderer");
+  }
 }
 
 } // namespace invaderz

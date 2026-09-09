@@ -14,6 +14,7 @@ Window::~Window()
 {
   SDL_DestroyRenderer(m_renderer);
   SDL_DestroyWindow(m_window);
+  TTF_Quit();
   SDL_Quit();
 }
 
@@ -63,6 +64,11 @@ void Window::initialize(const int width, const int height, const std::string_vie
   if (!SDL_Init(SDL_INIT_EVENTS | SDL_INIT_VIDEO | SDL_INIT_AUDIO))
   {
     throw runtime::SdlException("Failed to initialize SDL");
+  }
+
+  if (!TTF_Init())
+  {
+    throw runtime::SdlException("Failed to initialize SDL TTF");
   }
 
   if (!SDL_CreateWindowAndRenderer(title.data(), width, height, 0, &m_window, &m_renderer))
