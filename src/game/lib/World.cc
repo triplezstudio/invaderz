@@ -147,7 +147,8 @@ void World::handleCollisions()
   // Enemies <-> bullets collisions
   for (std::size_t id = 0u; id < m_bullets.size(); ++id)
   {
-    auto bulletRect = rectFromPositionAndDimensions(m_bullets[id], bulletDimensions());
+    auto bulletRect    = rectFromPositionAndDimensions(m_bullets[id], bulletDimensions());
+    bool bulletRemoved = false;
 
     for (auto &wave : m_level.waves)
     {
@@ -159,14 +160,18 @@ void World::handleCollisions()
 
         if (SDL_HasRectIntersectionFloat(&bulletRect, &enemyRect))
         {
-          bulletsToRemove.push_front(id);
+          if (!bulletRemoved)
+          {
+            bulletsToRemove.push_front(id);
+            bulletRemoved = true;
+          }
           enemiesToRemove.push_front(idE);
         }
       }
 
-      for (const auto &id : enemiesToRemove)
+      for (const auto &idToRemove : enemiesToRemove)
       {
-        wave.enemies.erase(wave.enemies.begin() + id);
+        wave.enemies.erase(wave.enemies.begin() + idToRemove);
       }
     }
   }
