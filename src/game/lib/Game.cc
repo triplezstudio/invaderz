@@ -36,12 +36,6 @@ void Game::loadTextures(ITextureRegistry &registry)
 
   auto bulletFilePath = std::format("{}/bullet.png", std::getenv("ASSET_FOLDER"));
   m_bullet            = registry.registerTexture(bulletFilePath);
-
-  auto victoryFilePath = std::format("{}/victory_label.png", std::getenv("ASSET_FOLDER"));
-  m_victoryLabel       = registry.registerTexture(victoryFilePath);
-
-  auto lossFilePath = std::format("{}/loss_label.png", std::getenv("ASSET_FOLDER"));
-  m_lossLabel       = registry.registerTexture(lossFilePath);
 }
 
 void Game::loadFonts(IFontRegistry &registry)
@@ -172,26 +166,31 @@ void Game::renderGame(IRenderer &renderer)
   }
 }
 
+namespace {
+constexpr auto VICTORY_TEXT = "Well done, you won!";
+constexpr auto DEFEAT_TEXT  = "Too bad, you lost!";
+} // namespace
+
 void Game::renderEndGameScreen(IRenderer &renderer)
 {
   Eigen::Vector3f titleDimensions(m_screenDims(0), m_screenDims(0), 0.0f);
   Eigen::Vector3f position(0.0f, 0.0f, 0.0f);
   renderer.renderTexture(m_title, position, titleDimensions);
 
-  titleDimensions = Eigen::Vector3f(300.0f, 64.0f, 0.0f);
-  position        = Eigen::Vector3f((m_screenDims(0) - 300.0f) / 2.0f, 400.0f, 0.0f);
-
-  auto texture = m_victoryLabel;
+  auto text = VICTORY_TEXT;
   if (m_world->lives() <= 0)
   {
-    texture = m_lossLabel;
+    text = DEFEAT_TEXT;
   }
 
-  renderer.renderTexture(texture, position, titleDimensions);
+  const auto &font    = renderer.getFontRegistry().getFont(m_font);
+  auto textDimensions = font.getTextSize(text);
+  position            = Eigen::Vector3f((m_screenDims(0) - textDimensions(0)) / 2.0f, 400.0f, 0.0f);
+  renderer.renderText(m_font, text, position);
 
-  titleDimensions = Eigen::Vector3f(300.0f, 64.0f, 0.0f);
-  position        = Eigen::Vector3f((m_screenDims(0) - 300.0f) / 2.0f, 500.0f, 0.0f);
-  renderer.renderTexture(m_titleLabel, position, titleDimensions);
+  textDimensions = font.getTextSize(TITLE_TEXT);
+  position       = Eigen::Vector3f((m_screenDims(0) - textDimensions(0)) / 2.0f, 500.0f, 0.0f);
+  renderer.renderText(m_font, TITLE_TEXT, position);
 }
 
 } // namespace invaderz

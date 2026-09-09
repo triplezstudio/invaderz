@@ -38,8 +38,6 @@ class Game : public runtime::CoreObject
   TextureId m_spaceShip{};
   TextureId m_enemyShip{};
   TextureId m_bullet{};
-  TextureId m_victoryLabel{};
-  TextureId m_lossLabel{};
   FontId m_font{};
 
   Eigen::Vector3f m_screenDims{};
