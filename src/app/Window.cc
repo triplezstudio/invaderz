@@ -12,6 +12,7 @@ Window::Window(const int width, const int height, const std::string_view title)
 
 Window::~Window()
 {
+  TTF_DestroyRendererTextEngine(m_textEngine);
   SDL_DestroyRenderer(m_renderer);
   SDL_DestroyWindow(m_window);
   TTF_Quit();
@@ -56,7 +57,7 @@ auto Window::pollEvents() -> FrameData
 auto Window::createRenderer() const -> IRendererPtr
 {
   auto textureRegistry = std::make_unique<invaderz::SdlTextureRegistry>(m_renderer);
-  auto fontRegistry    = std::make_unique<invaderz::SdlFontRegistry>();
+  auto fontRegistry    = std::make_unique<invaderz::SdlFontRegistry>(m_textEngine);
   return std::unique_ptr<Renderer>(
     new Renderer(m_renderer, std::move(textureRegistry), std::move(fontRegistry)));
 }
@@ -76,6 +77,12 @@ void Window::initialize(const int width, const int height, const std::string_vie
   if (!SDL_CreateWindowAndRenderer(title.data(), width, height, 0, &m_window, &m_renderer))
   {
     throw runtime::SdlException("Failed to initialize window/renderer");
+  }
+
+  m_textEngine = TTF_CreateRendererTextEngine(m_renderer);
+  if (m_textEngine == nullptr)
+  {
+    throw runtime::SdlException("Failed to initialize text engine");
   }
 }
 

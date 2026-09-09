@@ -5,7 +5,6 @@
 #include "IFontRegistry.hh"
 #include "ITextureRegistry.hh"
 #include <SDL3/SDL.h>
-#include <SDL3_ttf/SDL_ttf.h>
 #include <eigen3/Eigen/Eigen>
 
 namespace invaderz {
@@ -15,7 +14,7 @@ class Window;
 class Renderer
 {
   public:
-  virtual ~Renderer();
+  virtual ~Renderer() = default;
 
   auto getTextureRegistry() const -> ITextureRegistry &;
   auto getFontRegistry() const -> IFontRegistry &;
@@ -42,11 +41,8 @@ class Renderer
            IFontRegistryPtr fontRegistry);
 
   SDL_Renderer *m_renderer{nullptr};
-  TTF_TextEngine *m_textEngine{nullptr};
   ITextureRegistryPtr m_textureRegistry{};
   IFontRegistryPtr m_fontRegistry{};
-
-  void createTextEngine();
 };
 
 } // namespace invaderz

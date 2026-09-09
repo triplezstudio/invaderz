@@ -11,7 +11,7 @@ SdlTextureRegistry::SdlTextureRegistry(ITextureLoader *loader)
 
   if (m_loader == nullptr)
   {
-    throw std::invalid_argument("Expected non null audio manager");
+    throw std::invalid_argument("Expected non null texture loader");
   }
 }
 

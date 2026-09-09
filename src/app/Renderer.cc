@@ -1,7 +1,6 @@
 
 #include "Renderer.hh"
 #include "SdlException.hh"
-#include <format>
 
 namespace invaderz {
 
@@ -24,13 +23,6 @@ Renderer::Renderer(SDL_Renderer *renderer,
   {
     throw std::invalid_argument("Expected non null font registry");
   }
-
-  createTextEngine();
-}
-
-Renderer::~Renderer()
-{
-  TTF_DestroyRendererTextEngine(m_textEngine);
 }
 
 auto Renderer::getTextureRegistry() const -> ITextureRegistry &
@@ -111,52 +103,13 @@ void Renderer::renderTexture(const TextureId textureId,
                            SDL_FLIP_NONE);
 }
 
-namespace {
-TTF_Font *font = nullptr;
-std::unordered_map<std::string, TTF_Text *> textCache{};
-constexpr auto FONT_SIZE = 30;
-
-auto createText(TTF_TextEngine *engine, const std::string &text) -> TTF_Text *
-{
-  const auto maybeText = textCache.find(text);
-  if (maybeText != textCache.end())
-  {
-    return maybeText->second;
-  }
-
-  if (font == nullptr)
-  {
-    auto filePath = std::format("{}/ArcadeClassic.ttf", std::getenv("ASSET_FOLDER"));
-    font          = TTF_OpenFont(filePath.c_str(), FONT_SIZE);
-  }
-
-  auto ttfText    = TTF_CreateText(engine, font, text.c_str(), text.size());
-  textCache[text] = ttfText;
-  return ttfText;
-}
-} // namespace
-
 void Renderer::renderText(const FontId fontId,
                           const std::string &text,
                           const Eigen::Vector3f &position)
 {
-  /*auto &font =*/m_fontRegistry->getFont(fontId);
-
-  auto gpuText = createText(m_textEngine, text);
+  auto &font         = m_fontRegistry->getFont(fontId);
+  const auto gpuText = font.renderText(text);
   TTF_DrawRendererText(gpuText, static_cast<int>(position(0)), static_cast<int>(position(1)));
-
-  // SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
-  // SDL_RenderDebugText(m_renderer, 10, 10, text.c_str());
-  // SDL_SetRenderDrawColor(m_renderer, 32, 32, 32, 255);
-}
-
-void Renderer::createTextEngine()
-{
-  m_textEngine = TTF_CreateRendererTextEngine(m_renderer);
-  if (m_textEngine == nullptr)
-  {
-    throw runtime::SdlException("Failed to initialize text renderer");
-  }
 }
 
 } // namespace invaderz

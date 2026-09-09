@@ -15,7 +15,7 @@ using FontId = int;
 class SdlFontRegistry : public runtime::CoreObject
 {
   public:
-  SdlFontRegistry();
+  SdlFontRegistry(IFontLoader *loader);
   virtual ~SdlFontRegistry() = default;
 
   auto registerFont(const std::string_view filePath, const int pointSize) -> FontId;
@@ -24,6 +24,8 @@ class SdlFontRegistry : public runtime::CoreObject
   auto getFont(const FontId id) const -> assets::Font &;
 
   private:
+  IFontLoader *m_loader{};
+
   std::atomic<FontId> m_nextId{0};
   std::unordered_map<FontId, assets::FontPtr> m_fonts{};
 };
