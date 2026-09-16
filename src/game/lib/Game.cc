@@ -197,8 +197,6 @@ void Game::renderGame(IRenderer &renderer)
                          converter.toScreenPos(m_world->playerPosition(), playerDimensions()),
                          playerDimensions());
 
-  renderScoreMenu(renderer);
-
   renderExplosions(renderer);
 
   for (const auto &enemy : m_world->enemies())
@@ -215,6 +213,8 @@ void Game::renderGame(IRenderer &renderer)
                            bulletDimensions(),
                            -90.0f);
   }
+
+  renderScoreMenu(renderer);
 
   if (m_screen == Screen::PAUSE)
   {
