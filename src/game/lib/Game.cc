@@ -69,7 +69,7 @@ bool Game::update(const FrameData &data)
 
   if (m_screen == Screen::END_GAME)
   {
-    if (data.state.anyKeyReleased())
+    if (data.state.released(keyboard::RETURN))
     {
       info("Transition from end game screen to game screen");
       initialize(m_screenDims);
@@ -204,6 +204,7 @@ void Game::renderGame(IRenderer &renderer)
 namespace {
 constexpr auto VICTORY_TEXT = "Well done, you won!";
 constexpr auto DEFEAT_TEXT  = "Too bad, you lost!";
+constexpr auto RESTART_TEXT = "Press Return key continue";
 } // namespace
 
 void Game::renderEndGameScreen(IRenderer &renderer)
@@ -225,8 +226,8 @@ void Game::renderEndGameScreen(IRenderer &renderer)
   x          = computeCenteredTextPosition(renderer, m_font, score);
   renderer.renderText(m_font, score, Eigen::Vector3f(x, 450.0f, 0.0f));
 
-  x = computeCenteredTextPosition(renderer, m_font, TITLE_TEXT);
-  renderer.renderText(m_font, TITLE_TEXT, Eigen::Vector3f(x, 500.0f, 0.0f));
+  x = computeCenteredTextPosition(renderer, m_font, RESTART_TEXT);
+  renderer.renderText(m_font, RESTART_TEXT, Eigen::Vector3f(x, 500.0f, 0.0f));
 }
 
 auto Game::computeCenteredTextPosition(IRenderer &renderer,
