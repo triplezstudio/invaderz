@@ -7,6 +7,7 @@ enum class Screen
 {
   WELCOME,
   GAME,
+  PAUSE,
   END_GAME
 };
 

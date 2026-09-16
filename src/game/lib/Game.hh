@@ -46,6 +46,8 @@ class Game : public runtime::CoreObject
 
   void initialize(Eigen::Vector3f screenDims);
 
+  void processActionKeys(const FrameData &data);
+
   void renderWelcomeScreen(IRenderer &renderer);
   void renderGame(IRenderer &renderer);
   void renderEndGameScreen(IRenderer &renderer);

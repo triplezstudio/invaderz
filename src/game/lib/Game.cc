@@ -77,6 +77,8 @@ bool Game::update(const FrameData &data)
     }
   }
 
+  processActionKeys(data);
+
   const auto quit = data.quit || data.state.held(keyboard::ESCAPE);
   return !quit;
 }
@@ -87,7 +89,7 @@ void Game::processSounds(IAudioEngine &engine)
   if (initial)
   {
     initial = false;
-    engine.playOnce(m_mainTheme, 0.125f);
+    engine.playOnce(m_mainTheme, 0.0125f);
   }
 }
 
@@ -99,6 +101,7 @@ void Game::render(IRenderer &renderer)
       renderWelcomeScreen(renderer);
       break;
     case Screen::GAME:
+    case Screen::PAUSE:
       renderGame(renderer);
       break;
     case Screen::END_GAME:
@@ -123,6 +126,23 @@ void Game::initialize(Eigen::Vector3f screenDims)
   m_playerUpdater = std::make_unique<PlayerUpdater>(*m_world);
 }
 
+void Game::processActionKeys(const FrameData &data)
+{
+  if (data.state.released(keyboard::P))
+  {
+    if (m_screen == Screen::PAUSE)
+    {
+      info("Transition from pause screen to game screen");
+      m_screen = Screen::GAME;
+    }
+    else if (m_screen == Screen::GAME)
+    {
+      info("Transition from game screen to pause screen");
+      m_screen = Screen::PAUSE;
+    }
+  }
+}
+
 namespace {
 constexpr auto TITLE_TEXT = "Press any key to continue";
 }
@@ -138,6 +158,10 @@ void Game::renderWelcomeScreen(IRenderer &renderer)
   position = Eigen::Vector3f((m_screenDims(0) - textDimensions(0)) / 2.0f, 400.0f, 0.0f);
 
   renderer.renderText(m_font, TITLE_TEXT, position);
+}
+
+namespace {
+constexpr auto PAUSE_TEXT = "PAUSE";
 }
 
 void Game::renderGame(IRenderer &renderer)
@@ -163,6 +187,14 @@ void Game::renderGame(IRenderer &renderer)
                            converter.toScreenPos(bullet, bulletDimensions()),
                            bulletDimensions(),
                            -90.0f);
+  }
+
+  if (m_screen == Screen::PAUSE)
+  {
+    const auto &font          = renderer.getFontRegistry().getFont(m_font);
+    const auto textDimensions = font.getTextSize(PAUSE_TEXT);
+    Eigen::Vector3f position((m_screenDims(0) - textDimensions(0)) / 2.0f, 400.0f, 0.0f);
+    renderer.renderText(m_font, PAUSE_TEXT, position);
   }
 }
 
