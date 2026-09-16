@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreObject.hh"
+#include "Effects.hh"
 #include "FrameData.hh"
 #include "Level.hh"
 #include "Wave.hh"
@@ -32,7 +33,8 @@ class World : public runtime::CoreObject
   /// @brief - Update the world after elapsed seconds have passed.
   /// @param elapsed - the elapsed time since the last call to this
   /// function in seconds.
-  void update(const float elapsed);
+  /// @param effects - the effects produced in the current update frame.
+  void update(const float elapsed, Effects &effects);
 
   private:
   int m_score{0};
@@ -44,7 +46,7 @@ class World : public runtime::CoreObject
   void initialize();
 
   void moveEnemies(const float elapsed);
-  void handleCollisions();
+  void handleCollisions(Effects &effects);
   void removeOutOfBoundsBullets();
   void removeInvadingEnemies();
   void removeEmptyWaves();

@@ -47,6 +47,10 @@ void Game::loadFonts(IFontRegistry &registry)
   m_font        = registry.registerFont(filePath, 30);
 }
 
+namespace {
+const Eigen::Vector3f SCORE_MENU_SIZE(0.0f, 64.0f, 0.0);
+}
+
 bool Game::update(const FrameData &data)
 {
   if (m_screen == Screen::WELCOME)
@@ -61,25 +65,28 @@ bool Game::update(const FrameData &data)
   if (m_screen == Screen::GAME)
   {
     m_playerUpdater->update(data);
-    m_world->update(data.elapsed);
+
+    Effects effects{};
+    m_world->update(data.elapsed, effects);
 
     for (auto &explosion : m_explosions)
     {
       explosion.update(data.elapsed);
     }
     std::erase_if(m_explosions, [](const Explosion &e) { return e.finished(); });
+    for (const auto &explosion : effects.explosions)
+    {
+      Eigen::Vector3f screenOffset(0.0f, SCORE_MENU_SIZE(1), 0.0f);
+      Eigen::Vector3f displayDims = m_screenDims - SCORE_MENU_SIZE;
+      CoordinateConverter converter{m_world->dims(), screenOffset, displayDims};
+
+      m_explosions.emplace_back(converter.toScreenPos(explosion, explosionDimensions()));
+    }
 
     if (m_world->lives() <= 0 || m_world->remainingWaves() <= 0)
     {
       info("Transition from game screen to end game screen");
       m_screen = Screen::END_GAME;
-    }
-
-    if (data.state.released(keyboard::E))
-    {
-      auto x = 20 + std::rand() % 400;
-      auto y = 20 + std::rand() % 700;
-      m_explosions.emplace_back(Eigen::Vector3f(1.0f * x, 1.0f * y, 0.0f));
     }
   }
 
@@ -131,8 +138,6 @@ void Game::render(IRenderer &renderer)
 namespace {
 constexpr auto PLAYER_LIVES = 15;
 constexpr auto WAVES_COUNT  = 5;
-
-const Eigen::Vector3f SCORE_MENU_SIZE(0.0f, 64.0f, 0.0);
 } // namespace
 
 void Game::initialize(Eigen::Vector3f screenDims)
@@ -142,6 +147,7 @@ void Game::initialize(Eigen::Vector3f screenDims)
   Level level(PLAYER_LIVES, WAVES_COUNT, std::move(worldDims));
   m_world         = std::make_unique<World>(std::move(level));
   m_playerUpdater = std::make_unique<PlayerUpdater>(*m_world);
+  m_explosions.clear();
 }
 
 void Game::processActionKeys(const FrameData &data)

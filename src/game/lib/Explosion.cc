@@ -33,8 +33,7 @@ void Explosion::update(float elapsed)
 void Explosion::render(IRenderer &renderer, const TextureId texture)
 {
   Eigen::Vector3f src(index * FRAME_SIZE(0), 0.0f, 0.0f);
-  Eigen::Vector3f dstDims = 1.6f * enemyDimensions();
-  renderer.renderPartialTexture(texture, src, FRAME_SIZE, position, dstDims);
+  renderer.renderPartialTexture(texture, src, FRAME_SIZE, position, explosionDimensions());
 }
 
 } // namespace invaderz

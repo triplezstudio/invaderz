@@ -23,4 +23,9 @@ auto bulletDimensions() -> Eigen::Vector3f
   return BULLET_DIMS;
 }
 
+auto explosionDimensions() -> Eigen::Vector3f
+{
+  return 1.6f * enemyDimensions();
+}
+
 } // namespace invaderz

@@ -87,7 +87,7 @@ namespace {
 constexpr auto REASONABLE_FRAME_TIME = 100.0f;
 }
 
-void World::update(const float elapsed)
+void World::update(const float elapsed, Effects &effects)
 {
   // The first frame might receive a very long elapsed time
   // which breaks the logic relying on it being more or less
@@ -110,7 +110,7 @@ void World::update(const float elapsed)
 
   removeOutOfBoundsBullets();
   moveEnemies(elapsed);
-  handleCollisions();
+  handleCollisions(effects);
   removeInvadingEnemies();
   removeEmptyWaves();
 }
@@ -145,7 +145,7 @@ auto rectFromPositionAndDimensions(const Eigen::Vector3f &position,
 }
 } // namespace
 
-void World::handleCollisions()
+void World::handleCollisions(Effects &effects)
 {
   std::deque<std::size_t> bulletsToRemove{};
 
@@ -170,7 +170,10 @@ void World::handleCollisions()
             bulletsToRemove.push_front(id);
             bulletRemoved = true;
           }
+
           m_score += wave.enemies[idE].worth;
+          effects.explosions.emplace_back(wave.enemies[idE].pos);
+
           enemiesToRemove.push_front(idE);
         }
       }
