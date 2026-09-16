@@ -52,6 +52,9 @@ class Game : public runtime::CoreObject
   void renderGame(IRenderer &renderer);
   void renderEndGameScreen(IRenderer &renderer);
 
+  auto computeCenteredTextPosition(IRenderer &renderer,
+                                   const FontId fontId,
+                                   const std::string &text) const -> float;
   void renderScoreMenu(IRenderer &renderer);
 };
 

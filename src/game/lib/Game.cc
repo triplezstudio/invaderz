@@ -155,11 +155,8 @@ void Game::renderWelcomeScreen(IRenderer &renderer)
   Eigen::Vector3f position(0.0f, 0.0f, 0.0f);
   renderer.renderTexture(m_title, position, titleDimensions);
 
-  const auto &font          = renderer.getFontRegistry().getFont(m_font);
-  const auto textDimensions = font.getTextSize(TITLE_TEXT);
-  position = Eigen::Vector3f((m_screenDims(0) - textDimensions(0)) / 2.0f, 400.0f, 0.0f);
-
-  renderer.renderText(m_font, TITLE_TEXT, position);
+  const auto x = computeCenteredTextPosition(renderer, m_font, TITLE_TEXT);
+  renderer.renderText(m_font, TITLE_TEXT, Eigen::Vector3f(x, 400.0f, 0.0f));
 }
 
 namespace {
@@ -221,14 +218,24 @@ void Game::renderEndGameScreen(IRenderer &renderer)
     text = DEFEAT_TEXT;
   }
 
-  const auto &font    = renderer.getFontRegistry().getFont(m_font);
-  auto textDimensions = font.getTextSize(text);
-  position            = Eigen::Vector3f((m_screenDims(0) - textDimensions(0)) / 2.0f, 400.0f, 0.0f);
-  renderer.renderText(m_font, text, position);
+  auto x = computeCenteredTextPosition(renderer, m_font, text);
+  renderer.renderText(m_font, text, Eigen::Vector3f(x, 400.0f, 0.0f));
 
-  textDimensions = font.getTextSize(TITLE_TEXT);
-  position       = Eigen::Vector3f((m_screenDims(0) - textDimensions(0)) / 2.0f, 500.0f, 0.0f);
-  renderer.renderText(m_font, TITLE_TEXT, position);
+  auto score = std::format("Your score: {}", m_world->score());
+  x          = computeCenteredTextPosition(renderer, m_font, score);
+  renderer.renderText(m_font, score, Eigen::Vector3f(x, 450.0f, 0.0f));
+
+  x = computeCenteredTextPosition(renderer, m_font, TITLE_TEXT);
+  renderer.renderText(m_font, TITLE_TEXT, Eigen::Vector3f(x, 500.0f, 0.0f));
+}
+
+auto Game::computeCenteredTextPosition(IRenderer &renderer,
+                                       const FontId fontId,
+                                       const std::string &text) const -> float
+{
+  auto &font          = renderer.getFontRegistry().getFont(fontId);
+  auto textDimensions = font.getTextSize(text);
+  return (m_screenDims(0) - textDimensions(0)) / 2.0f;
 }
 
 void Game::renderScoreMenu(IRenderer &renderer)
