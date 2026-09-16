@@ -115,7 +115,10 @@ void World::update(const float elapsed)
 
 void World::initialize()
 {
-  m_player = Eigen::Vector3f(m_level.dimensions(0) / 2.0f, 0.0f, 0.0f);
+  // Offset the y position of the player so that it is fully visible.
+  const auto yOffset = playerDimensions()(1) / 2.0f + 4;
+
+  m_player = Eigen::Vector3f(m_level.dimensions(0) / 2.0f, yOffset, 0.0f);
   info("player pos " + str(m_player));
 }
 

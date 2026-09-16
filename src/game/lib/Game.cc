@@ -115,11 +115,13 @@ void Game::render(IRenderer &renderer)
 namespace {
 constexpr auto PLAYER_LIVES = 15;
 constexpr auto WAVES_COUNT  = 5;
+
+const Eigen::Vector3f SCORE_MENU_SIZE(0.0f, 64.0f, 0.0);
 } // namespace
 
 void Game::initialize(Eigen::Vector3f screenDims)
 {
-  Eigen::Vector3f worldDims = screenDims - playerDimensions();
+  Eigen::Vector3f worldDims = screenDims - SCORE_MENU_SIZE;
 
   Level level(PLAYER_LIVES, WAVES_COUNT, std::move(worldDims));
   m_world         = std::make_unique<World>(std::move(level));
@@ -168,7 +170,9 @@ void Game::renderGame(IRenderer &renderer)
 {
   renderer.renderTexture(m_background, Eigen::Vector3f::Zero(), m_screenDims);
 
-  CoordinateConverter converter{m_world->dims(), m_screenDims};
+  Eigen::Vector3f screenOffset(0.0f, SCORE_MENU_SIZE(1), 0.0f);
+  Eigen::Vector3f displayDims = m_screenDims - SCORE_MENU_SIZE;
+  CoordinateConverter converter{m_world->dims(), screenOffset, displayDims};
 
   renderer.renderTexture(m_spaceShip,
                          converter.toScreenPos(m_world->playerPosition(), playerDimensions()),

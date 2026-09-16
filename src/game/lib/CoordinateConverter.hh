@@ -8,7 +8,9 @@ namespace invaderz {
 class CoordinateConverter
 {
   public:
-  CoordinateConverter(const Eigen::Vector3f &worldDims, const Eigen::Vector3f &screenDims);
+  CoordinateConverter(const Eigen::Vector3f &worldDims,
+                      const Eigen::Vector3f &screenOffset,
+                      const Eigen::Vector3f &displayDims);
   ~CoordinateConverter() = default;
 
   auto toScreenPos(const Eigen::Vector3f &worldPos, const Eigen::Vector3f &size) const
@@ -16,9 +18,8 @@ class CoordinateConverter
 
   private:
   Eigen::Vector3f m_worldDims{};
-  Eigen::Vector3f m_screenDims{};
-
-  Eigen::Vector3f m_offset{};
+  Eigen::Vector3f m_screenOffset{};
+  Eigen::Vector3f m_displayDims{};
 };
 
 } // namespace invaderz
