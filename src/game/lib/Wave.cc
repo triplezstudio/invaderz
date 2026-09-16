@@ -19,6 +19,8 @@ constexpr auto ENEMY_WAVE_COUNT = 15;
 // wave spans.
 constexpr auto ENEMY_WAVE_PERCENTAGE = 0.9f;
 
+constexpr auto ENEMY_BASE_WORTH = 10;
+
 auto calculateXOffset(const float y, const Eigen::Vector3f dims) -> float
 {
   // The world has `dims` for dimensions. Each enemy should complete `OSCILLATION_COUNT` oscillations
@@ -53,6 +55,7 @@ Wave::Wave(const Eigen::Vector3f &worldDims, const float yOffset)
 
     Enemy enemy{
       .xInit = x,
+      .worth = ENEMY_BASE_WORTH * (i + 1),
       .pos   = Eigen::Vector3f(x, y, 0.0f),
     };
     enemies.push_back(enemy);

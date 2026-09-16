@@ -147,7 +147,7 @@ void Game::processActionKeys(const FrameData &data)
 
 namespace {
 constexpr auto TITLE_TEXT = "Press any key to continue";
-}
+} // namespace
 
 void Game::renderWelcomeScreen(IRenderer &renderer)
 {
@@ -177,6 +177,8 @@ void Game::renderGame(IRenderer &renderer)
   renderer.renderTexture(m_spaceShip,
                          converter.toScreenPos(m_world->playerPosition(), playerDimensions()),
                          playerDimensions());
+
+  renderScoreMenu(renderer);
 
   for (const auto &enemy : m_world->enemies())
   {
@@ -227,6 +229,17 @@ void Game::renderEndGameScreen(IRenderer &renderer)
   textDimensions = font.getTextSize(TITLE_TEXT);
   position       = Eigen::Vector3f((m_screenDims(0) - textDimensions(0)) / 2.0f, 500.0f, 0.0f);
   renderer.renderText(m_font, TITLE_TEXT, position);
+}
+
+void Game::renderScoreMenu(IRenderer &renderer)
+{
+  Eigen::Vector3f position(10.0f, 10.0f, 0.0f);
+  auto text = std::format("Score {}", m_world->score());
+  renderer.renderText(m_font, text, position);
+
+  position = Eigen::Vector3f(m_screenDims(0) / 2.0f, 10.0f, 0.0f);
+  text     = std::format("Lives {}", m_world->lives());
+  renderer.renderText(m_font, text, position);
 }
 
 } // namespace invaderz

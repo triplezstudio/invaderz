@@ -11,9 +11,6 @@ namespace {
 // The speeds are expressed in pixels per second
 constexpr auto PLAYER_SPEED = 280;
 constexpr auto BULLET_SPEED = 800;
-
-// The interval is expressed in seconds
-constexpr auto ENEMY_WAVE_INTERVAL = 3.0;
 } // namespace
 
 World::World(Level level)
@@ -36,6 +33,11 @@ auto World::playerPosition() const -> const Eigen::Vector3f &
 auto World::lives() const -> int
 {
   return m_level.lives;
+}
+
+auto World::score() const -> int
+{
+  return m_score;
 }
 
 auto World::remainingWaves() const -> int
@@ -168,6 +170,7 @@ void World::handleCollisions()
             bulletsToRemove.push_front(id);
             bulletRemoved = true;
           }
+          m_score += wave.enemies[idE].worth;
           enemiesToRemove.push_front(idE);
         }
       }

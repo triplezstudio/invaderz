@@ -20,6 +20,7 @@ class World : public runtime::CoreObject
   auto dims() const -> const Eigen::Vector3f &;
   auto playerPosition() const -> const Eigen::Vector3f &;
   auto lives() const -> int;
+  auto score() const -> int;
   auto remainingWaves() const -> int;
 
   auto bullets() const -> const std::vector<Eigen::Vector3f> &;
@@ -34,6 +35,7 @@ class World : public runtime::CoreObject
   void update(const float elapsed);
 
   private:
+  int m_score{0};
   Level m_level;
 
   Eigen::Vector3f m_player{};
