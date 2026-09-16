@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreObject.hh"
+#include "Explosion.hh"
 #include "FrameData.hh"
 #include "IAudioEngine.hh"
 #include "IAudioRegistry.hh"
@@ -38,11 +39,14 @@ class Game : public runtime::CoreObject
   TextureId m_spaceShip{};
   TextureId m_enemyShip{};
   TextureId m_bullet{};
+  TextureId m_explosion{};
   FontId m_font{};
 
   Eigen::Vector3f m_screenDims{};
   WorldPtr m_world{};
   PlayerUpdaterPtr m_playerUpdater{};
+
+  std::vector<Explosion> m_explosions{};
 
   void initialize(Eigen::Vector3f screenDims);
 
@@ -56,6 +60,7 @@ class Game : public runtime::CoreObject
                                    const FontId fontId,
                                    const std::string &text) const -> float;
   void renderScoreMenu(IRenderer &renderer);
+  void renderExplosions(IRenderer &renderer);
 };
 
 } // namespace invaderz

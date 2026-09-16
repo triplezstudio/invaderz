@@ -4,7 +4,7 @@
 namespace invaderz {
 namespace {
 // The speeds are expressed in pixels per second
-constexpr auto ENEMY_SPEED = 240;
+constexpr auto ENEMY_SPEED = 20;
 
 // Defines the number of horizontal oscillation each enemy will do over the course of
 // its journey towards the bottom of the screen.

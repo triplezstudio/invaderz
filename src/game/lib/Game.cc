@@ -36,6 +36,9 @@ void Game::loadTextures(ITextureRegistry &registry)
 
   auto bulletFilePath = std::format("{}/bullet.png", std::getenv("ASSET_FOLDER"));
   m_bullet            = registry.registerTexture(bulletFilePath);
+
+  auto explosionFilePath = std::format("{}/explosion.png", std::getenv("ASSET_FOLDER"));
+  m_explosion            = registry.registerTexture(explosionFilePath);
 }
 
 void Game::loadFonts(IFontRegistry &registry)
@@ -60,10 +63,23 @@ bool Game::update(const FrameData &data)
     m_playerUpdater->update(data);
     m_world->update(data.elapsed);
 
+    for (auto &explosion : m_explosions)
+    {
+      explosion.update(data.elapsed);
+    }
+    std::erase_if(m_explosions, [](const Explosion &e) { return e.finished(); });
+
     if (m_world->lives() <= 0 || m_world->remainingWaves() <= 0)
     {
       info("Transition from game screen to end game screen");
       m_screen = Screen::END_GAME;
+    }
+
+    if (data.state.released(keyboard::E))
+    {
+      auto x = 20 + std::rand() % 400;
+      auto y = 20 + std::rand() % 700;
+      m_explosions.emplace_back(Eigen::Vector3f(1.0f * x, 1.0f * y, 0.0f));
     }
   }
 
@@ -177,6 +193,8 @@ void Game::renderGame(IRenderer &renderer)
 
   renderScoreMenu(renderer);
 
+  renderExplosions(renderer);
+
   for (const auto &enemy : m_world->enemies())
   {
     renderer.renderTexture(m_enemyShip,
@@ -248,6 +266,14 @@ void Game::renderScoreMenu(IRenderer &renderer)
   position = Eigen::Vector3f(m_screenDims(0) / 2.0f, 10.0f, 0.0f);
   text     = std::format("Lives {}", m_world->lives());
   renderer.renderText(m_font, text, position);
+}
+
+void Game::renderExplosions(IRenderer &renderer)
+{
+  for (auto &explosion : m_explosions)
+  {
+    explosion.render(renderer, m_explosion);
+  }
 }
 
 } // namespace invaderz

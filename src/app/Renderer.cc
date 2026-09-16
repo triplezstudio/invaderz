@@ -103,6 +103,30 @@ void Renderer::renderTexture(const TextureId textureId,
                            SDL_FLIP_NONE);
 }
 
+void Renderer::renderPartialTexture(const TextureId textureId,
+                                    const Eigen::Vector3f &src,
+                                    const Eigen::Vector3f &srcDims,
+                                    const Eigen::Vector3f &dst,
+                                    const Eigen::Vector3f &dstDims)
+{
+  auto &texture = m_textureRegistry->getTexture(textureId);
+
+  SDL_FRect srcRect{
+    .x = src(0),
+    .y = src(1),
+    .w = srcDims(0),
+    .h = srcDims(1),
+  };
+
+  SDL_FRect dstRect{
+    .x = dst(0),
+    .y = dst(1),
+    .w = dstDims(0),
+    .h = dstDims(1),
+  };
+  SDL_RenderTexture(m_renderer, texture.getRaw(), &srcRect, &dstRect);
+}
+
 void Renderer::renderText(const FontId fontId,
                           const std::string &text,
                           const Eigen::Vector3f &position)

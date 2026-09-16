@@ -31,6 +31,12 @@ class Renderer
                      const Eigen::Vector3f &dims,
                      const float angle = 0.0f);
 
+  void renderPartialTexture(const TextureId textureId,
+                            const Eigen::Vector3f &src,
+                            const Eigen::Vector3f &srcDims,
+                            const Eigen::Vector3f &dst,
+                            const Eigen::Vector3f &dstDims);
+
   void renderText(const FontId fontId, const std::string &text, const Eigen::Vector3f &position);
 
   private:
