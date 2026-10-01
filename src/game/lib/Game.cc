@@ -50,7 +50,7 @@ void Game::loadTextures(ITextureRegistry &registry)
 void Game::loadFonts(IFontRegistry &registry)
 {
   auto filePath = std::format("{}/ArcadeClassic.ttf", std::getenv("ASSET_FOLDER"));
-  m_font        = registry.registerFont(filePath, 30);
+  m_font        = registry.registerFont(filePath, 16);
 }
 
 namespace {
