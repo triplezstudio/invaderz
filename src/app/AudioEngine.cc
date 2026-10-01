@@ -4,15 +4,9 @@
 
 namespace invaderz {
 
-AudioEngine::AudioEngine(IAudioRegistryPtr registry)
+AudioEngine::AudioEngine()
   : runtime::CoreObject("audio")
-  , m_registry(std::move(registry))
 {
-  if (m_registry == nullptr)
-  {
-    throw std::invalid_argument("Expected non null registry");
-  }
-
   initializeAudio();
 }
 
@@ -22,25 +16,27 @@ AudioEngine::~AudioEngine()
   SDL_CloseAudioDevice(m_audioDeviceId);
 }
 
+auto AudioEngine::getAudioRegistry() const -> IAudioRegistry &
+{
+  return *m_registry;
+}
+
 void AudioEngine::playOnce(const SoundId id, const float volume)
 {
   auto &sound = m_registry->getSound(id);
-
-  sound.bindToAudioDevice(m_audioDeviceId, volume);
-  m_currentlyPlayingSounds.push_back(PlayingSound{.id = id, .mode = Mode::ONCE});
+  m_currentlyPlayingSounds.push_back(
+    std::make_unique<PlayingSound>(sound, m_mixer, Mode::ONCE, volume));
 }
 
 void AudioEngine::update()
 {
   for (const auto &sound : m_currentlyPlayingSounds)
   {
-    updatePlayingSound(sound);
+    sound->update();
   }
 
-  std::erase_if(m_currentlyPlayingSounds, [this](const PlayingSound &sound) {
-    auto &soundData = m_registry->getSound(sound.id);
-    return soundData.isFinished();
-  });
+  std::erase_if(m_currentlyPlayingSounds,
+                [](const PlayingSoundPtr &sound) { return sound->isFinished(); });
 }
 
 void AudioEngine::initializeAudio()
@@ -57,17 +53,15 @@ void AudioEngine::initializeAudio()
     throw runtime::SdlException("Failed to open audio device");
   }
 
-  info(std::string("Bound to audio device ") + SDL_GetAudioDeviceName(m_audioDeviceId));
-}
-
-void AudioEngine::updatePlayingSound(const PlayingSound &sound)
-{
-  auto &soundData = m_registry->getSound(sound.id);
-
-  if (!soundData.isFinished())
+  m_mixer = MIX_CreateMixerDevice(m_audioDeviceId, nullptr);
+  if (m_mixer == nullptr)
   {
-    soundData.update();
+    throw runtime::SdlException("Failed to create audio mixer");
   }
+
+  m_registry = std::make_unique<invaderz::SdlAudioRegistry>(m_mixer);
+
+  info(std::string("Bound to audio device ") + SDL_GetAudioDeviceName(m_audioDeviceId));
 }
 
 } // namespace invaderz

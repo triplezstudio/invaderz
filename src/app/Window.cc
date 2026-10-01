@@ -1,6 +1,7 @@
 
 #include "Window.hh"
 #include "SdlException.hh"
+#include <SDL3_mixer/SDL_mixer.h>
 
 namespace invaderz {
 
@@ -15,6 +16,7 @@ Window::~Window()
   TTF_DestroyRendererTextEngine(m_textEngine);
   SDL_DestroyRenderer(m_renderer);
   SDL_DestroyWindow(m_window);
+  MIX_Quit();
   TTF_Quit();
   SDL_Quit();
 }
@@ -72,6 +74,10 @@ void Window::initialize(const int width, const int height, const std::string_vie
   if (!TTF_Init())
   {
     throw runtime::SdlException("Failed to initialize SDL TTF");
+  }
+
+  if (!MIX_Init()) {
+    throw runtime::SdlException("Failed to initialize SDL mixer");
   }
 
   if (!SDL_CreateWindowAndRenderer(title.data(), width, height, 0, &m_window, &m_renderer))

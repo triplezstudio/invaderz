@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreObject.hh"
+#include "ISoundLoader.hh"
 #include "Sound.hh"
 #include <atomic>
 #include <memory>
@@ -15,7 +16,7 @@ using SoundId = int;
 class SdlAudioRegistry : public runtime::CoreObject
 {
   public:
-  SdlAudioRegistry();
+  SdlAudioRegistry(ISoundLoader *loader);
   virtual ~SdlAudioRegistry() = default;
 
   /// @brief - Registers a new audio file as a usable asset in the project.
@@ -30,6 +31,8 @@ class SdlAudioRegistry : public runtime::CoreObject
   auto getSound(const SoundId id) const -> assets::Sound &;
 
   private:
+  ISoundLoader *m_loader{};
+
   std::atomic<SoundId> m_nextId{0};
   std::unordered_map<SoundId, assets::SoundPtr> m_sounds{};
 };

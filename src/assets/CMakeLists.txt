@@ -26,6 +26,7 @@ target_link_libraries (assets_lib PUBLIC
 	runtime_lib
 	SDL3::SDL3
 	SDL3_ttf::SDL3_ttf
+	SDL3_mixer::SDL3_mixer
 	)
 
 if (WIN32)

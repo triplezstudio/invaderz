@@ -18,6 +18,9 @@ void Game::loadSounds(IAudioRegistry &registry)
 {
   auto themeFilePath = std::format("{}/cyberpunky_theme.wav", std::getenv("ASSET_FOLDER"));
   m_mainTheme        = registry.registerSound(themeFilePath);
+
+  auto fireFilePath = std::format("{}/fire_theme.ogg", std::getenv("ASSET_FOLDER"));
+  m_fireSound       = registry.registerSound(fireFilePath);
 }
 
 void Game::loadTextures(ITextureRegistry &registry)

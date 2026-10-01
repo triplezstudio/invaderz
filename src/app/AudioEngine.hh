@@ -3,6 +3,7 @@
 
 #include "CoreObject.hh"
 #include "IAudioRegistry.hh"
+#include "PlayingSound.hh"
 #include <vector>
 
 namespace invaderz {
@@ -10,8 +11,10 @@ namespace invaderz {
 class AudioEngine : public runtime::CoreObject
 {
   public:
-  AudioEngine(IAudioRegistryPtr registry);
+  AudioEngine();
   virtual ~AudioEngine();
+
+  auto getAudioRegistry() const -> IAudioRegistry &;
 
   void playOnce(const SoundId id, const float volume);
 
@@ -21,24 +24,12 @@ class AudioEngine : public runtime::CoreObject
 
   private:
   SDL_AudioDeviceID m_audioDeviceId{0};
+  MIX_Mixer *m_mixer{};
   IAudioRegistryPtr m_registry{};
 
-  // TODO: handle "looping"
-  enum class Mode
-  {
-    ONCE,
-  };
-  struct PlayingSound
-  {
-    SoundId id{};
-    Mode mode{Mode::ONCE};
-  };
-
-  std::vector<PlayingSound> m_currentlyPlayingSounds{};
+  std::vector<PlayingSoundPtr> m_currentlyPlayingSounds{};
 
   void initializeAudio();
-
-  void updatePlayingSound(const PlayingSound &sound);
 };
 
 } // namespace invaderz

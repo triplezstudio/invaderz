@@ -34,6 +34,7 @@ class Game : public runtime::CoreObject
   Screen m_screen{Screen::WELCOME};
 
   SoundId m_mainTheme{};
+  SoundId m_fireSound{};
   TextureId m_title{};
   TextureId m_background{};
   TextureId m_spaceShip{};
