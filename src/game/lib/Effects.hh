@@ -8,6 +8,7 @@ namespace invaderz {
 
 struct Effects
 {
+  std::vector<Eigen::Vector3f> shots{};
   std::vector<Eigen::Vector3f> explosions{};
 };
 

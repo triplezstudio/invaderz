@@ -13,7 +13,7 @@ class PlayerUpdater
   PlayerUpdater(World &world);
   ~PlayerUpdater() = default;
 
-  void update(const FrameData &data);
+  void update(const FrameData &data, Effects &effects);
 
   private:
   World &m_world;

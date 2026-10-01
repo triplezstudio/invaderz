@@ -35,6 +35,7 @@ class Game : public runtime::CoreObject
 
   SoundId m_mainTheme{};
   SoundId m_fireSound{};
+  SoundId m_explosionSound{};
   TextureId m_title{};
   TextureId m_background{};
   TextureId m_spaceShip{};
@@ -47,6 +48,8 @@ class Game : public runtime::CoreObject
   WorldPtr m_world{};
   PlayerUpdaterPtr m_playerUpdater{};
 
+  int m_shotsToFire{};
+  int m_explosionsToStart{};
   std::vector<Explosion> m_explosions{};
 
   void initialize(Eigen::Vector3f screenDims);

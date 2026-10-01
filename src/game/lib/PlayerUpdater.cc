@@ -28,7 +28,7 @@ auto collectMotion(const FrameData &data) -> Eigen::Vector3f
 }
 } // namespace
 
-void PlayerUpdater::update(const FrameData &data)
+void PlayerUpdater::update(const FrameData &data, Effects &effects)
 {
   const auto motion = collectMotion(data);
   m_world.movePlayer(motion);
@@ -36,6 +36,7 @@ void PlayerUpdater::update(const FrameData &data)
   if (data.state.released(keyboard::SPACE))
   {
     m_world.fire();
+    effects.shots.emplace_back(m_world.playerPosition());
   }
 }
 

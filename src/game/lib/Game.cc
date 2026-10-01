@@ -19,8 +19,11 @@ void Game::loadSounds(IAudioRegistry &registry)
   auto themeFilePath = std::format("{}/cyberpunky_theme.wav", std::getenv("ASSET_FOLDER"));
   m_mainTheme        = registry.registerSound(themeFilePath);
 
-  auto fireFilePath = std::format("{}/fire_theme.ogg", std::getenv("ASSET_FOLDER"));
+  auto fireFilePath = std::format("{}/fire_sound.ogg", std::getenv("ASSET_FOLDER"));
   m_fireSound       = registry.registerSound(fireFilePath);
+
+  auto explosionFilePath = std::format("{}/explosion_sound.ogg", std::getenv("ASSET_FOLDER"));
+  m_explosionSound       = registry.registerSound(explosionFilePath);
 }
 
 void Game::loadTextures(ITextureRegistry &registry)
@@ -67,11 +70,15 @@ bool Game::update(const FrameData &data)
 
   if (m_screen == Screen::GAME)
   {
-    m_playerUpdater->update(data);
-
     Effects effects{};
+    m_playerUpdater->update(data, effects);
+
     m_world->update(data.elapsed, effects);
 
+    // Process shots
+    m_shotsToFire += static_cast<int>(effects.shots.size());
+
+    // Process explosions
     for (auto &explosion : m_explosions)
     {
       explosion.update(data.elapsed);
@@ -84,8 +91,10 @@ bool Game::update(const FrameData &data)
       CoordinateConverter converter{m_world->dims(), screenOffset, displayDims};
 
       m_explosions.emplace_back(converter.toScreenPos(explosion, explosionDimensions()));
+      ++m_explosionsToStart;
     }
 
+    // Handle end game
     if (m_world->lives() <= 0 || m_world->remainingWaves() <= 0)
     {
       info("Transition from game screen to end game screen");
@@ -116,6 +125,18 @@ void Game::processSounds(IAudioEngine &engine)
   {
     initial = false;
     engine.playOnce(m_mainTheme, 0.0125f);
+  }
+
+  while (m_shotsToFire > 0)
+  {
+    engine.playOnce(m_fireSound, 0.05f);
+    --m_shotsToFire;
+  }
+
+  while (m_explosionsToStart > 0)
+  {
+    engine.playOnce(m_explosionSound, 0.05f);
+    --m_explosionsToStart;
   }
 }
 
