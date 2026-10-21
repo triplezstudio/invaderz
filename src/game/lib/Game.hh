@@ -2,69 +2,24 @@
 #pragma once
 
 #include "CoreObject.hh"
-#include "Explosion.hh"
-#include "FrameData.hh"
-#include "IAudioEngine.hh"
-#include "IAudioRegistry.hh"
-#include "IFontRegistry.hh"
-#include "IRenderer.hh"
-#include "ITextureRegistry.hh"
-#include "PlayerUpdater.hh"
-#include "Screen.hh"
-#include "World.hh"
-#include <eigen3/Eigen/Eigen>
+#include "IStage.hh"
+#include "StageFactory.hh"
 
 namespace invaderz {
 
 class Game : public runtime::CoreObject
 {
   public:
-  Game(Eigen::Vector3f screenDims);
+  Game(StageFactory &&factory);
   ~Game() override = default;
-
-  void loadSounds(IAudioRegistry &registry);
-  void loadTextures(ITextureRegistry &registry);
-  void loadFonts(IFontRegistry &registry);
 
   bool update(const FrameData &data);
   void processSounds(IAudioEngine &engine);
   void render(IRenderer &renderer);
 
   private:
-  Screen m_screen{Screen::WELCOME};
-
-  SoundId m_mainTheme{};
-  SoundId m_fireSound{};
-  SoundId m_explosionSound{};
-  TextureId m_title{};
-  TextureId m_background{};
-  TextureId m_spaceShip{};
-  TextureId m_enemyShip{};
-  TextureId m_bullet{};
-  TextureId m_explosion{};
-  FontId m_font{};
-
-  Eigen::Vector3f m_screenDims{};
-  WorldPtr m_world{};
-  PlayerUpdaterPtr m_playerUpdater{};
-
-  int m_shotsToFire{};
-  int m_explosionsToStart{};
-  std::vector<Explosion> m_explosions{};
-
-  void initialize(Eigen::Vector3f screenDims);
-
-  void processActionKeys(const FrameData &data);
-
-  void renderWelcomeScreen(IRenderer &renderer);
-  void renderGame(IRenderer &renderer);
-  void renderEndGameScreen(IRenderer &renderer);
-
-  auto computeCenteredTextPosition(IRenderer &renderer,
-                                   const FontId fontId,
-                                   const std::string &text) const -> float;
-  void renderScoreMenu(IRenderer &renderer);
-  void renderExplosions(IRenderer &renderer);
+  StageFactory m_factory;
+  IStagePtr m_stage{};
 };
 
 } // namespace invaderz

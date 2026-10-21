@@ -16,12 +16,19 @@ target_include_directories (invaderz_game_lib PUBLIC
 target_sources (invaderz_game_lib PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/Constants.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/CoordinateConverter.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/EndStage.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/Explosion.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/Game.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/Game.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/GameStage.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/IStage.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/Level.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/PlayerUpdater.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/Screen.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/StageFactory.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/VectorUtils.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/Wave.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/WelcomeStage.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/World.cc
 	)
 
