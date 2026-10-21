@@ -6,9 +6,8 @@ namespace {
 constexpr float SPACE_BETWEEN_WAVES = 80.0f;
 }
 
-Level::Level(const int lives, const int wavesCount, const Eigen::Vector3f &worldDims)
-  : lives(lives)
-  , dimensions(worldDims)
+Level::Level(const int wavesCount, const Eigen::Vector3f &worldDims)
+  : dimensions(worldDims)
 {
   for (int id = 0; id < wavesCount; ++id)
   {

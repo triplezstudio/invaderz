@@ -8,7 +8,7 @@ namespace invaderz {
 
 struct StageResult
 {
-  bool finished{};
+  bool finished{false};
   std::optional<Screen> next{};
 };
 

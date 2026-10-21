@@ -5,8 +5,10 @@ namespace invaderz {
 
 struct GameState
 {
-  int lives{};
-  int score{};
+  int lives{15};
+  int score{0};
+
+  void reset();
 };
 
 } // namespace invaderz

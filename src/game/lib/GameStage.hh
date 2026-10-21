@@ -12,7 +12,7 @@ namespace invaderz {
 class GameStage : public IStage, public runtime::CoreObject
 {
   public:
-  GameStage(Eigen::Vector3f screenDims);
+  GameStage(GameState *state, Eigen::Vector3f screenDims);
   ~GameStage() override = default;
 
   void loadSounds(IAudioRegistry &registry) override;
@@ -35,7 +35,6 @@ class GameStage : public IStage, public runtime::CoreObject
 
   Eigen::Vector3f m_screenDims{};
 
-  GameState m_state{};
   bool m_paused{};
 
   WorldPtr m_world{};

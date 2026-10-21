@@ -9,10 +9,12 @@ namespace invaderz {
 StageFactory::StageFactory(IAudioRegistry &audioRegistry,
                            IFontRegistry &fontRegistry,
                            ITextureRegistry &textureRegistry,
+                           GameState *state,
                            Eigen::Vector3f screenDims)
   : m_audioRegistry(audioRegistry)
   , m_fontRegistry(fontRegistry)
   , m_textureRegistry(textureRegistry)
+  , m_state(state)
   , m_screenDims(std::move(screenDims))
 {}
 
@@ -23,13 +25,13 @@ auto StageFactory::create(const Screen screen) const -> IStagePtr
   switch (screen)
   {
     case Screen::WELCOME:
-      stage = std::make_unique<WelcomeStage>(m_screenDims);
+      stage = std::make_unique<WelcomeStage>(m_state, m_screenDims);
       break;
     case Screen::GAME:
-      stage = std::make_unique<GameStage>(m_screenDims);
+      stage = std::make_unique<GameStage>(m_state, m_screenDims);
       break;
     case Screen::END_GAME:
-      stage = std::make_unique<EndStage>(m_screenDims);
+      stage = std::make_unique<EndStage>(m_state, m_screenDims);
       break;
     case Screen::EXIT:
       return nullptr;

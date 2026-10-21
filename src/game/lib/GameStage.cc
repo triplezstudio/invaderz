@@ -7,8 +7,8 @@
 
 namespace invaderz {
 
-GameStage::GameStage(Eigen::Vector3f screenDims)
-  : IStage()
+GameStage::GameStage(GameState *state, Eigen::Vector3f screenDims)
+  : IStage(state)
   , runtime::CoreObject("game")
   , m_screenDims(screenDims)
 {
@@ -79,7 +79,7 @@ auto GameStage::update(const FrameData &data) -> StageResult
   }
 
   // Handle end game
-  if (m_world->lives() <= 0 || m_world->remainingWaves() <= 0)
+  if (m_state->lives <= 0 || m_world->remainingWaves() <= 0)
   {
     info("Transition from game screen to end game screen");
     return StageResult{.finished = true, .next = Screen::END_GAME};
@@ -87,14 +87,7 @@ auto GameStage::update(const FrameData &data) -> StageResult
 
   processActionKeys(data);
 
-  StageResult result{.finished = false};
-  if (data.quit || data.state.held(keyboard::ESCAPE))
-  {
-    result.finished = true;
-    result.next     = Screen::EXIT;
-  }
-
-  return result;
+  return overrideWithEscapeKey(data, StageResult{});
 }
 
 void GameStage::processSounds(IAudioEngine &engine)
@@ -157,18 +150,18 @@ void GameStage::render(IRenderer &renderer)
 }
 
 namespace {
-constexpr auto PLAYER_LIVES = 15;
-constexpr auto WAVES_COUNT  = 5;
+constexpr auto WAVES_COUNT = 5;
 } // namespace
 
 void GameStage::initialize(Eigen::Vector3f screenDims)
 {
   Eigen::Vector3f worldDims = screenDims - SCORE_MENU_SIZE;
 
-  Level level(PLAYER_LIVES, WAVES_COUNT, std::move(worldDims));
-  m_world         = std::make_unique<World>(std::move(level));
+  Level level(WAVES_COUNT, std::move(worldDims));
+  m_world         = std::make_unique<World>(m_state, std::move(level));
   m_playerUpdater = std::make_unique<PlayerUpdater>(*m_world);
   m_explosions.clear();
+  m_state->reset();
 }
 
 void GameStage::processActionKeys(const FrameData &data)
@@ -190,11 +183,11 @@ void GameStage::processActionKeys(const FrameData &data)
 void GameStage::renderScoreMenu(IRenderer &renderer)
 {
   Eigen::Vector3f position(10.0f, 10.0f, 0.0f);
-  auto text = std::format("Score {}", m_world->score());
+  auto text = std::format("Score {}", m_state->score);
   renderer.renderText(m_font, text, position);
 
   position = Eigen::Vector3f(m_screenDims(0) / 2.0f, 10.0f, 0.0f);
-  text     = std::format("Lives {}", m_world->lives());
+  text     = std::format("Lives {}", m_state->lives);
   renderer.renderText(m_font, text, position);
 }
 

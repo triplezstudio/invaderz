@@ -4,6 +4,7 @@
 #include "CoreObject.hh"
 #include "Effects.hh"
 #include "FrameData.hh"
+#include "GameState.hh"
 #include "Level.hh"
 #include "Wave.hh"
 #include <eigen3/Eigen/Eigen>
@@ -15,13 +16,11 @@ namespace invaderz {
 class World : public runtime::CoreObject
 {
   public:
-  World(Level level);
+  World(GameState *state, Level level);
   ~World() override = default;
 
   auto dims() const -> const Eigen::Vector3f &;
   auto playerPosition() const -> const Eigen::Vector3f &;
-  auto lives() const -> int;
-  auto score() const -> int;
   auto remainingWaves() const -> int;
 
   auto bullets() const -> const std::vector<Eigen::Vector3f> &;
@@ -37,7 +36,7 @@ class World : public runtime::CoreObject
   void update(const float elapsed, Effects &effects);
 
   private:
-  int m_score{0};
+  GameState *m_state;
   Level m_level;
 
   Eigen::Vector3f m_player{};

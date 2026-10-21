@@ -4,8 +4,8 @@
 
 namespace invaderz {
 
-EndStage::EndStage(Eigen::Vector3f screenDims)
-  : IStage()
+EndStage::EndStage(GameState *state, Eigen::Vector3f screenDims)
+  : IStage(state)
   , m_screenDims(screenDims)
 {}
 
@@ -27,26 +27,21 @@ void EndStage::loadFonts(IFontRegistry &registry)
   m_font        = registry.registerFont(filePath, 16);
 }
 
-void EndStage::intialize(const GameState &state)
-{
-  m_state = state;
-}
-
 namespace {
 const Eigen::Vector3f SCORE_MENU_SIZE(0.0f, 64.0f, 0.0);
 }
 
 auto EndStage::update(const FrameData &data) -> StageResult
 {
+  StageResult result{};
+
   if (data.state.released(keyboard::RETURN))
   {
-    return StageResult{
-      .finished = true,
-      .next     = Screen::GAME,
-    };
+    result.finished = true;
+    result.next     = Screen::GAME;
   }
 
-  return StageResult{.finished = false};
+  return overrideWithEscapeKey(data, result);
 }
 
 namespace {
@@ -62,7 +57,7 @@ void EndStage::render(IRenderer &renderer)
   renderer.renderTexture(m_title, position, titleDimensions);
 
   auto text = VICTORY_TEXT;
-  if (m_state.lives <= 0)
+  if (m_state->lives <= 0)
   {
     text = DEFEAT_TEXT;
   }
@@ -70,7 +65,7 @@ void EndStage::render(IRenderer &renderer)
   auto x = computeCenteredTextPosition(renderer, m_font, text);
   renderer.renderText(m_font, text, Eigen::Vector3f(x, 400.0f, 0.0f));
 
-  auto score = std::format("Your score: {}", m_state.score);
+  auto score = std::format("Your score: {}", m_state->score);
   x          = computeCenteredTextPosition(renderer, m_font, score);
   renderer.renderText(m_font, score, Eigen::Vector3f(x, 450.0f, 0.0f));
 

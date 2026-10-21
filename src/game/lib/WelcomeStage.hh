@@ -8,7 +8,7 @@ namespace invaderz {
 class WelcomeStage : public IStage
 {
   public:
-  WelcomeStage(Eigen::Vector3f screenDims);
+  WelcomeStage(GameState *state, Eigen::Vector3f screenDims);
   ~WelcomeStage() override = default;
 
   void loadSounds(IAudioRegistry &registry) override;

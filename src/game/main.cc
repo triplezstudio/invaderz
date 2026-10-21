@@ -25,9 +25,12 @@ int main(int /*argc*/, char * /*argv*/[])
   invaderz::IRendererPtr renderer = window.createRenderer();
   invaderz::AudioEngine audioEngine;
 
+  invaderz::GameState state{};
+
   invaderz::StageFactory factory(audioEngine.getAudioRegistry(),
                                  renderer->getFontRegistry(),
                                  renderer->getTextureRegistry(),
+                                 &state,
                                  screenDims);
   invaderz::Game game(std::move(factory));
 

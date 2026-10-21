@@ -16,18 +16,21 @@ namespace invaderz {
 class IStage
 {
   public:
-  IStage()          = default;
+  IStage(GameState *state);
   virtual ~IStage() = default;
 
   virtual void loadSounds(IAudioRegistry &registry)     = 0;
   virtual void loadTextures(ITextureRegistry &registry) = 0;
   virtual void loadFonts(IFontRegistry &registry)       = 0;
 
-  virtual void intialize(const GameState &state);
-
   virtual auto update(const FrameData &data) -> StageResult = 0;
   virtual void processSounds(IAudioEngine &engine);
   virtual void render(IRenderer &renderer) = 0;
+
+  protected:
+  GameState *m_state{};
+
+  auto overrideWithEscapeKey(const FrameData &data, StageResult result) -> StageResult;
 };
 
 using IStagePtr = std::unique_ptr<IStage>;

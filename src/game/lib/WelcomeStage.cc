@@ -4,8 +4,8 @@
 
 namespace invaderz {
 
-WelcomeStage::WelcomeStage(Eigen::Vector3f screenDims)
-  : IStage()
+WelcomeStage::WelcomeStage(GameState *state, Eigen::Vector3f screenDims)
+  : IStage(state)
   , m_screenDims(screenDims)
 {}
 
@@ -33,15 +33,15 @@ const Eigen::Vector3f SCORE_MENU_SIZE(0.0f, 64.0f, 0.0);
 
 auto WelcomeStage::update(const FrameData &data) -> StageResult
 {
+  StageResult result{};
+
   if (data.state.anyKeyReleased())
   {
-    return StageResult{
-      .finished = true,
-      .next     = Screen::GAME,
-    };
+    result.finished = true;
+    result.next     = Screen::GAME;
   }
 
-  return StageResult{.finished = false};
+  return overrideWithEscapeKey(data, result);
 }
 
 void WelcomeStage::processSounds(IAudioEngine &engine)

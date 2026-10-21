@@ -16,6 +16,7 @@ class StageFactory
   StageFactory(IAudioRegistry &audioRegistry,
                IFontRegistry &fontRegistry,
                ITextureRegistry &textureRegistry,
+               GameState *state,
                Eigen::Vector3f screenDims);
   ~StageFactory() = default;
 
@@ -25,6 +26,8 @@ class StageFactory
   IAudioRegistry &m_audioRegistry;
   IFontRegistry &m_fontRegistry;
   ITextureRegistry &m_textureRegistry;
+
+  GameState *m_state{};
 
   Eigen::Vector3f m_screenDims{};
 };

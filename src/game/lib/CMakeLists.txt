@@ -19,8 +19,8 @@ target_sources (invaderz_game_lib PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/EndStage.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/Explosion.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/Game.cc
-	${CMAKE_CURRENT_SOURCE_DIR}/Game.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/GameStage.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/GameState.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/IStage.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/Level.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/PlayerUpdater.cc

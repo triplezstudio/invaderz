@@ -13,8 +13,9 @@ constexpr auto PLAYER_SPEED = 280;
 constexpr auto BULLET_SPEED = 800;
 } // namespace
 
-World::World(Level level)
+World::World(GameState *state, Level level)
   : runtime::CoreObject("world")
+  , m_state(state)
   , m_level(std::move(level))
 {
   initialize();
@@ -28,16 +29,6 @@ auto World::dims() const -> const Eigen::Vector3f &
 auto World::playerPosition() const -> const Eigen::Vector3f &
 {
   return m_player;
-}
-
-auto World::lives() const -> int
-{
-  return m_level.lives;
-}
-
-auto World::score() const -> int
-{
-  return m_score;
 }
 
 auto World::remainingWaves() const -> int
@@ -171,7 +162,7 @@ void World::handleCollisions(Effects &effects)
             bulletRemoved = true;
           }
 
-          m_score += wave.enemies[idE].worth;
+          m_state->score += wave.enemies[idE].worth;
           effects.explosions.emplace_back(wave.enemies[idE].pos);
 
           enemiesToRemove.push_front(idE);
@@ -202,7 +193,7 @@ void World::handleCollisions(Effects &effects)
 
       if (SDL_HasRectIntersectionFloat(&playerRect, &enemyRect))
       {
-        --m_level.lives;
+        --m_state->lives;
         warn("Lost a live!");
         enemiesToRemove.push_front(idE);
       }
