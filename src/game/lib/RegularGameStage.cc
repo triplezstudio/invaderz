@@ -1,5 +1,5 @@
 
-#include "GameStage.hh"
+#include "RegularGameStage.hh"
 #include "Constants.hh"
 #include "CoordinateConverter.hh"
 #include "Effects.hh"
@@ -7,7 +7,7 @@
 
 namespace invaderz {
 
-GameStage::GameStage(GameState *state, Eigen::Vector3f screenDims)
+RegularGameStage::RegularGameStage(GameState *state, Eigen::Vector3f screenDims)
   : IStage(state)
   , runtime::CoreObject("game")
   , m_screenDims(screenDims)
@@ -15,7 +15,7 @@ GameStage::GameStage(GameState *state, Eigen::Vector3f screenDims)
   initialize(std::move(screenDims));
 }
 
-void GameStage::loadSounds(IAudioRegistry &registry)
+void RegularGameStage::loadSounds(IAudioRegistry &registry)
 {
   auto fireFilePath = std::format("{}/fire_sound.ogg", std::getenv("ASSET_FOLDER"));
   m_fireSound       = registry.registerSound(fireFilePath);
@@ -24,7 +24,7 @@ void GameStage::loadSounds(IAudioRegistry &registry)
   m_explosionSound       = registry.registerSound(explosionFilePath);
 }
 
-void GameStage::loadTextures(ITextureRegistry &registry)
+void RegularGameStage::loadTextures(ITextureRegistry &registry)
 {
   auto backgroundFilePath = std::format("{}/star_background.png", std::getenv("ASSET_FOLDER"));
   m_background            = registry.registerTexture(backgroundFilePath);
@@ -42,7 +42,7 @@ void GameStage::loadTextures(ITextureRegistry &registry)
   m_explosion            = registry.registerTexture(explosionFilePath);
 }
 
-void GameStage::loadFonts(IFontRegistry &registry)
+void RegularGameStage::loadFonts(IFontRegistry &registry)
 {
   auto filePath = std::format("{}/ArcadeClassic.ttf", std::getenv("ASSET_FOLDER"));
   m_font        = registry.registerFont(filePath, 16);
@@ -52,7 +52,7 @@ namespace {
 const Eigen::Vector3f SCORE_MENU_SIZE(0.0f, 64.0f, 0.0);
 }
 
-auto GameStage::update(const FrameData &data) -> StageResult
+auto RegularGameStage::update(const FrameData &data) -> StageResult
 {
   Effects effects{};
   m_playerUpdater->update(data, effects);
@@ -81,8 +81,23 @@ auto GameStage::update(const FrameData &data) -> StageResult
   // Handle end game
   if (m_state->lives <= 0 || m_world->remainingWaves() <= 0)
   {
+    if (m_state->lives > 0)
+    {
+      ++m_state->level;
+    }
+
+    if (m_state->level > m_state->maxLevel)
+    {
+      return StageResult{.finished = true, .next = Screen::END_GAME};
+    }
+
+    if ((m_state->level + 1) % m_state->bossLevelInterval == 0)
+    {
+      return StageResult{.finished = true, .next = Screen::BOSS_LEVEL};
+    }
+
     info("Transition from game screen to end game screen");
-    return StageResult{.finished = true, .next = Screen::END_GAME};
+    return StageResult{.finished = true, .next = Screen::REGULAR_LEVEL};
   }
 
   processActionKeys(data);
@@ -90,7 +105,7 @@ auto GameStage::update(const FrameData &data) -> StageResult
   return overrideWithEscapeKey(data, StageResult{});
 }
 
-void GameStage::processSounds(IAudioEngine &engine)
+void RegularGameStage::processSounds(IAudioEngine &engine)
 {
   while (m_shotsToFire > 0)
   {
@@ -109,7 +124,7 @@ namespace {
 constexpr auto PAUSE_TEXT = "PAUSE";
 }
 
-void GameStage::render(IRenderer &renderer)
+void RegularGameStage::render(IRenderer &renderer)
 {
   renderer.renderTexture(m_background, Eigen::Vector3f::Zero(), m_screenDims);
 
@@ -153,7 +168,7 @@ namespace {
 constexpr auto WAVES_COUNT = 5;
 } // namespace
 
-void GameStage::initialize(Eigen::Vector3f screenDims)
+void RegularGameStage::initialize(Eigen::Vector3f screenDims)
 {
   Eigen::Vector3f worldDims = screenDims - SCORE_MENU_SIZE;
 
@@ -164,7 +179,7 @@ void GameStage::initialize(Eigen::Vector3f screenDims)
   m_state->reset();
 }
 
-void GameStage::processActionKeys(const FrameData &data)
+void RegularGameStage::processActionKeys(const FrameData &data)
 {
   if (data.state.released(keyboard::P))
   {
@@ -180,18 +195,25 @@ void GameStage::processActionKeys(const FrameData &data)
   }
 }
 
-void GameStage::renderScoreMenu(IRenderer &renderer)
+void RegularGameStage::renderScoreMenu(IRenderer &renderer)
 {
   Eigen::Vector3f position(10.0f, 10.0f, 0.0f);
   auto text = std::format("Score {}", m_state->score);
   renderer.renderText(m_font, text, position);
 
-  position = Eigen::Vector3f(m_screenDims(0) / 2.0f, 10.0f, 0.0f);
+  position = Eigen::Vector3f(m_screenDims(0) / 3.0f, 10.0f, 0.0f);
   text     = std::format("Lives {}", m_state->lives);
   renderer.renderText(m_font, text, position);
+
+  // TODO: Could probably be moved to a member function in the GameState
+  if ((m_state->level + 1) % m_state->bossLevelInterval == 0)
+  {
+    position = Eigen::Vector3f(2.0f * m_screenDims(0) / 3.0f, 10.0f, 0.0f);
+    renderer.renderText(m_font, "BOSS !!!", position);
+  }
 }
 
-void GameStage::renderExplosions(IRenderer &renderer)
+void RegularGameStage::renderExplosions(IRenderer &renderer)
 {
   for (auto &explosion : m_explosions)
   {

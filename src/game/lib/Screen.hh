@@ -8,7 +8,8 @@ namespace invaderz {
 enum class Screen
 {
   WELCOME,
-  GAME,
+  REGULAR_LEVEL,
+  BOSS_LEVEL,
   PAUSE,
   END_GAME,
   EXIT

@@ -9,11 +9,11 @@
 
 namespace invaderz {
 
-class GameStage : public IStage, public runtime::CoreObject
+class RegularGameStage : public IStage, public runtime::CoreObject
 {
   public:
-  GameStage(GameState *state, Eigen::Vector3f screenDims);
-  ~GameStage() override = default;
+  RegularGameStage(GameState *state, Eigen::Vector3f screenDims);
+  ~RegularGameStage() override = default;
 
   void loadSounds(IAudioRegistry &registry) override;
   void loadTextures(ITextureRegistry &registry) override;
