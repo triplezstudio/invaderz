@@ -14,6 +14,8 @@ target_include_directories (invaderz_game_lib PUBLIC
 	)
 
 target_sources (invaderz_game_lib PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/BossGameStage.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/BossLevel.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/Constants.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/CoordinateConverter.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/EndStage.cc
@@ -30,7 +32,6 @@ target_sources (invaderz_game_lib PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/VectorUtils.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/Wave.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/WelcomeStage.cc
-	${CMAKE_CURRENT_SOURCE_DIR}/World.cc
 	)
 
 target_link_libraries (invaderz_game_lib

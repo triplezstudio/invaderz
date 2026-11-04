@@ -9,6 +9,7 @@ enum class Screen
 {
   WELCOME,
   LEVEL,
+  BOSS_LEVEL,
   END_GAME,
   EXIT
 };

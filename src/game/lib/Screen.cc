@@ -9,6 +9,10 @@ auto str(const Screen screen) -> std::string
   {
     case Screen::WELCOME:
       return "welcome";
+    case Screen::LEVEL:
+      return "level";
+    case Screen::BOSS_LEVEL:
+      return "boss_level";
     case Screen::END_GAME:
       return "end_game";
     case Screen::EXIT:

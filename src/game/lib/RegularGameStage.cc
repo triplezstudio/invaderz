@@ -64,7 +64,7 @@ auto RegularGameStage::update(const FrameData &data) -> StageResult
     Effects effects{};
     m_playerUpdater->update(data, effects);
 
-    m_world->update(data.elapsed, effects);
+    m_level->update(*m_state, data.elapsed, effects);
 
     // Process shots
     m_shotsToFire += static_cast<int>(effects.shots.size());
@@ -79,14 +79,14 @@ auto RegularGameStage::update(const FrameData &data) -> StageResult
     {
       Eigen::Vector3f screenOffset(0.0f, SCORE_MENU_SIZE(1), 0.0f);
       Eigen::Vector3f displayDims = m_screenDims - SCORE_MENU_SIZE;
-      CoordinateConverter converter{m_world->dims(), screenOffset, displayDims};
+      CoordinateConverter converter{m_level->dims(), screenOffset, displayDims};
 
       m_explosions.emplace_back(converter.toScreenPos(explosion, explosionDimensions()));
       ++m_explosionsToStart;
     }
 
     // Handle end game
-    if (m_state->lives <= 0 || m_world->remainingWaves() <= 0)
+    if (m_state->lives <= 0 || m_level->remainingWaves() <= 0)
     {
       if (m_state->lives > 0)
       {
@@ -102,7 +102,7 @@ auto RegularGameStage::update(const FrameData &data) -> StageResult
       if ((m_state->level + 1) % m_state->bossLevelInterval == 0)
       {
         info("Transition from regular level to boss level");
-        return StageResult{.finished = true, .next = Screen::LEVEL};
+        return StageResult{.finished = true, .next = Screen::BOSS_LEVEL};
       }
 
       info("Reached next regular level");
@@ -140,22 +140,22 @@ void RegularGameStage::render(IRenderer &renderer)
 
   Eigen::Vector3f screenOffset(0.0f, SCORE_MENU_SIZE(1), 0.0f);
   Eigen::Vector3f displayDims = m_screenDims - SCORE_MENU_SIZE;
-  CoordinateConverter converter{m_world->dims(), screenOffset, displayDims};
+  CoordinateConverter converter{m_level->dims(), screenOffset, displayDims};
 
   renderer.renderTexture(m_spaceShip,
-                         converter.toScreenPos(m_world->playerPosition(), playerDimensions()),
+                         converter.toScreenPos(m_level->playerPosition(), playerDimensions()),
                          playerDimensions());
 
   renderExplosions(renderer);
 
-  for (const auto &enemy : m_world->enemies())
+  for (const auto &enemy : m_level->enemies())
   {
     renderer.renderTexture(m_enemyShip,
                            converter.toScreenPos(enemy, enemyDimensions()),
                            enemyDimensions());
   }
 
-  for (const auto &bullet : m_world->bullets())
+  for (const auto &bullet : m_level->bullets())
   {
     renderer.renderTexture(m_bullet,
                            converter.toScreenPos(bullet, bulletDimensions()),
@@ -181,10 +181,8 @@ constexpr auto WAVES_COUNT = 5;
 void RegularGameStage::initialize(Eigen::Vector3f screenDims)
 {
   Eigen::Vector3f worldDims = screenDims - SCORE_MENU_SIZE;
-
-  Level level(WAVES_COUNT, std::move(worldDims));
-  m_world         = std::make_unique<World>(m_state, std::move(level));
-  m_playerUpdater = std::make_unique<PlayerUpdater>(*m_world);
+  m_level                   = std::make_unique<Level>(WAVES_COUNT, std::move(worldDims));
+  m_playerUpdater           = std::make_unique<PlayerUpdater>(*m_level);
 }
 
 void RegularGameStage::processActionKeys(const FrameData &data)

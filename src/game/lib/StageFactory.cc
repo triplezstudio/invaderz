@@ -1,5 +1,6 @@
 
 #include "StageFactory.hh"
+#include "BossGameStage.hh"
 #include "EndStage.hh"
 #include "RegularGameStage.hh"
 #include "WelcomeStage.hh"
@@ -29,6 +30,9 @@ auto StageFactory::create(const Screen screen) const -> IStagePtr
       break;
     case Screen::LEVEL:
       stage = std::make_unique<RegularGameStage>(m_state, m_screenDims);
+      break;
+    case Screen::BOSS_LEVEL:
+      stage = std::make_unique<BossGameStage>(m_state, m_screenDims);
       break;
     case Screen::END_GAME:
       stage = std::make_unique<EndStage>(m_state, m_screenDims);

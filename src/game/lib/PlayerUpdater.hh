@@ -2,7 +2,7 @@
 #pragma once
 
 #include "FrameData.hh"
-#include "World.hh"
+#include "ILevel.hh"
 #include <memory>
 
 namespace invaderz {
@@ -10,13 +10,13 @@ namespace invaderz {
 class PlayerUpdater
 {
   public:
-  PlayerUpdater(World &world);
+  PlayerUpdater(ILevel &level);
   ~PlayerUpdater() = default;
 
   void update(const FrameData &data, Effects &effects);
 
   private:
-  World &m_world;
+  ILevel &m_level;
 };
 
 using PlayerUpdaterPtr = std::unique_ptr<PlayerUpdater>;

@@ -4,9 +4,9 @@
 #include "CoreObject.hh"
 #include "Explosion.hh"
 #include "IStage.hh"
+#include "Level.hh"
 #include "PlayerUpdater.hh"
 #include "Subscreen.hh"
-#include "World.hh"
 
 namespace invaderz {
 
@@ -38,7 +38,7 @@ class RegularGameStage : public IStage, public runtime::CoreObject
 
   Subscreen m_subscreen{Subscreen::LOAD};
 
-  WorldPtr m_world{};
+  ILevelPtr m_level{};
   PlayerUpdaterPtr m_playerUpdater{};
 
   int m_shotsToFire{};

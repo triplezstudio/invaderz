@@ -3,8 +3,8 @@
 
 namespace invaderz {
 
-PlayerUpdater::PlayerUpdater(World &world)
-  : m_world(world)
+PlayerUpdater::PlayerUpdater(ILevel &level)
+  : m_level(level)
 {}
 
 namespace {
@@ -31,12 +31,12 @@ auto collectMotion(const FrameData &data) -> Eigen::Vector3f
 void PlayerUpdater::update(const FrameData &data, Effects &effects)
 {
   const auto motion = collectMotion(data);
-  m_world.movePlayer(motion);
+  m_level.movePlayer(motion);
 
   if (data.state.released(keyboard::SPACE))
   {
-    m_world.fire();
-    effects.shots.emplace_back(m_world.playerPosition());
+    m_level.fire();
+    effects.shots.emplace_back(m_level.playerPosition());
   }
 }
 
