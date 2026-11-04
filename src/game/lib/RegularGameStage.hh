@@ -5,6 +5,7 @@
 #include "Explosion.hh"
 #include "IStage.hh"
 #include "PlayerUpdater.hh"
+#include "Subscreen.hh"
 #include "World.hh"
 
 namespace invaderz {
@@ -35,7 +36,7 @@ class RegularGameStage : public IStage, public runtime::CoreObject
 
   Eigen::Vector3f m_screenDims{};
 
-  bool m_paused{};
+  Subscreen m_subscreen{Subscreen::LOAD};
 
   WorldPtr m_world{};
   PlayerUpdaterPtr m_playerUpdater{};

@@ -27,11 +27,9 @@ auto StageFactory::create(const Screen screen) const -> IStagePtr
     case Screen::WELCOME:
       stage = std::make_unique<WelcomeStage>(m_state, m_screenDims);
       break;
-    case Screen::REGULAR_LEVEL:
+    case Screen::LEVEL:
       stage = std::make_unique<RegularGameStage>(m_state, m_screenDims);
       break;
-    case Screen::BOSS_LEVEL:
-      throw std::invalid_argument("Boss level is not implemented");
     case Screen::END_GAME:
       stage = std::make_unique<EndStage>(m_state, m_screenDims);
       break;

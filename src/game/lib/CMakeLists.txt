@@ -26,6 +26,7 @@ target_sources (invaderz_game_lib PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/RegularGameStage.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/Screen.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/StageFactory.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/Subscreen.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/VectorUtils.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/Wave.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/WelcomeStage.cc

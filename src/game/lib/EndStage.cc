@@ -38,7 +38,7 @@ auto EndStage::update(const FrameData &data) -> StageResult
   if (data.state.released(keyboard::RETURN))
   {
     result.finished = true;
-    result.next     = Screen::REGULAR_LEVEL;
+    result.next     = Screen::LEVEL;
   }
 
   return overrideWithEscapeKey(data, result);

@@ -46,6 +46,11 @@ void RegularGameStage::loadFonts(IFontRegistry &registry)
 {
   auto filePath = std::format("{}/ArcadeClassic.ttf", std::getenv("ASSET_FOLDER"));
   m_font        = registry.registerFont(filePath, 16);
+
+  // Theoretically it would be better to check that sounds, textures and fonts have
+  // been loaded but we use this as a proxy because it's the last function called by
+  // the StageFactory.
+  m_subscreen = Subscreen::RUN;
 }
 
 namespace {
@@ -54,50 +59,55 @@ const Eigen::Vector3f SCORE_MENU_SIZE(0.0f, 64.0f, 0.0);
 
 auto RegularGameStage::update(const FrameData &data) -> StageResult
 {
-  Effects effects{};
-  m_playerUpdater->update(data, effects);
-
-  m_world->update(data.elapsed, effects);
-
-  // Process shots
-  m_shotsToFire += static_cast<int>(effects.shots.size());
-
-  // Process explosions
-  for (auto &explosion : m_explosions)
+  if (m_subscreen == Subscreen::RUN)
   {
-    explosion.update(data.elapsed);
-  }
-  std::erase_if(m_explosions, [](const Explosion &e) { return e.finished(); });
-  for (const auto &explosion : effects.explosions)
-  {
-    Eigen::Vector3f screenOffset(0.0f, SCORE_MENU_SIZE(1), 0.0f);
-    Eigen::Vector3f displayDims = m_screenDims - SCORE_MENU_SIZE;
-    CoordinateConverter converter{m_world->dims(), screenOffset, displayDims};
+    Effects effects{};
+    m_playerUpdater->update(data, effects);
 
-    m_explosions.emplace_back(converter.toScreenPos(explosion, explosionDimensions()));
-    ++m_explosionsToStart;
-  }
+    m_world->update(data.elapsed, effects);
 
-  // Handle end game
-  if (m_state->lives <= 0 || m_world->remainingWaves() <= 0)
-  {
-    if (m_state->lives > 0)
+    // Process shots
+    m_shotsToFire += static_cast<int>(effects.shots.size());
+
+    // Process explosions
+    for (auto &explosion : m_explosions)
     {
-      ++m_state->level;
+      explosion.update(data.elapsed);
+    }
+    std::erase_if(m_explosions, [](const Explosion &e) { return e.finished(); });
+    for (const auto &explosion : effects.explosions)
+    {
+      Eigen::Vector3f screenOffset(0.0f, SCORE_MENU_SIZE(1), 0.0f);
+      Eigen::Vector3f displayDims = m_screenDims - SCORE_MENU_SIZE;
+      CoordinateConverter converter{m_world->dims(), screenOffset, displayDims};
+
+      m_explosions.emplace_back(converter.toScreenPos(explosion, explosionDimensions()));
+      ++m_explosionsToStart;
     }
 
-    if (m_state->level > m_state->maxLevel)
+    // Handle end game
+    if (m_state->lives <= 0 || m_world->remainingWaves() <= 0)
     {
-      return StageResult{.finished = true, .next = Screen::END_GAME};
-    }
+      if (m_state->lives > 0)
+      {
+        ++m_state->level;
+      }
 
-    if ((m_state->level + 1) % m_state->bossLevelInterval == 0)
-    {
-      return StageResult{.finished = true, .next = Screen::BOSS_LEVEL};
-    }
+      if (m_state->level > m_state->maxLevel)
+      {
+        info("Transition from game screen to end game screen");
+        return StageResult{.finished = true, .next = Screen::END_GAME};
+      }
 
-    info("Transition from game screen to end game screen");
-    return StageResult{.finished = true, .next = Screen::REGULAR_LEVEL};
+      if ((m_state->level + 1) % m_state->bossLevelInterval == 0)
+      {
+        info("Transition from regular level to boss level");
+        return StageResult{.finished = true, .next = Screen::LEVEL};
+      }
+
+      info("Reached next regular level");
+      return StageResult{.finished = true, .next = Screen::LEVEL};
+    }
   }
 
   processActionKeys(data);
@@ -155,7 +165,7 @@ void RegularGameStage::render(IRenderer &renderer)
 
   renderScoreMenu(renderer);
 
-  if (m_paused)
+  if (m_subscreen == Subscreen::PAUSE)
   {
     const auto &font          = renderer.getFontRegistry().getFont(m_font);
     const auto textDimensions = font.getTextSize(PAUSE_TEXT);
@@ -183,15 +193,21 @@ void RegularGameStage::processActionKeys(const FrameData &data)
 {
   if (data.state.released(keyboard::P))
   {
-    if (m_paused)
+    switch (m_subscreen)
     {
-      info("Transition from pause screen to game screen");
+      case Subscreen::LOAD:
+        break;
+      case Subscreen::RUN:
+        info("Transition from game screen to pause screen");
+        m_subscreen = Subscreen::PAUSE;
+        break;
+      case Subscreen::PAUSE:
+        info("Transition from pause screen to game screen");
+        m_subscreen = Subscreen::RUN;
+        break;
+      default:
+        break;
     }
-    else if (!m_paused)
-    {
-      info("Transition from game screen to pause screen");
-    }
-    m_paused = !m_paused;
   }
 }
 
