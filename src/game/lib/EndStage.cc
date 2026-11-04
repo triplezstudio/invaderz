@@ -37,6 +37,8 @@ auto EndStage::update(const FrameData &data) -> StageResult
 
   if (data.state.released(keyboard::RETURN))
   {
+    m_state->reset();
+
     result.finished = true;
     result.next     = Screen::LEVEL;
   }

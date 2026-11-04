@@ -93,7 +93,7 @@ auto RegularGameStage::update(const FrameData &data) -> StageResult
         ++m_state->level;
       }
 
-      if (m_state->level > m_state->maxLevel)
+      if (m_state->level > m_state->maxLevel || m_state->lives <= 0)
       {
         info("Transition from game screen to end game screen");
         return StageResult{.finished = true, .next = Screen::END_GAME};
@@ -185,8 +185,6 @@ void RegularGameStage::initialize(Eigen::Vector3f screenDims)
   Level level(WAVES_COUNT, std::move(worldDims));
   m_world         = std::make_unique<World>(m_state, std::move(level));
   m_playerUpdater = std::make_unique<PlayerUpdater>(*m_world);
-  m_explosions.clear();
-  m_state->reset();
 }
 
 void RegularGameStage::processActionKeys(const FrameData &data)
