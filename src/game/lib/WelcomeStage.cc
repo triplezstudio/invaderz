@@ -38,7 +38,8 @@ auto WelcomeStage::update(const FrameData &data) -> StageResult
   if (data.state.anyKeyReleased())
   {
     result.finished = true;
-    result.next     = Screen::LEVEL;
+    // TODO: Restore this to be LEVEL
+    result.next = Screen::BOSS_LEVEL;
   }
 
   return overrideWithEscapeKey(data, result);

@@ -8,6 +8,7 @@ namespace invaderz {
 // The dimensions are expressed in pixels.
 auto playerDimensions() -> Eigen::Vector3f;
 auto enemyDimensions() -> Eigen::Vector3f;
+auto bossDimensions() -> Eigen::Vector3f;
 auto bulletDimensions() -> Eigen::Vector3f;
 auto explosionDimensions() -> Eigen::Vector3f;
 

@@ -29,7 +29,7 @@ class BossGameStage : public IStage, public runtime::CoreObject
   SoundId m_explosionSound{};
   TextureId m_background{};
   TextureId m_spaceShip{};
-  TextureId m_enemyShip{};
+  TextureId m_bossShip{};
   TextureId m_bullet{};
   TextureId m_explosion{};
   FontId m_font{};

@@ -1,5 +1,6 @@
 
 #include "BossGameStage.hh"
+#include "BossLevel.hh"
 #include "Constants.hh"
 #include "CoordinateConverter.hh"
 #include "Effects.hh"
@@ -32,8 +33,8 @@ void BossGameStage::loadTextures(ITextureRegistry &registry)
   auto spaceshipFilePath = std::format("{}/player_ship.png", std::getenv("ASSET_FOLDER"));
   m_spaceShip            = registry.registerTexture(spaceshipFilePath);
 
-  auto enemyShipFilePath = std::format("{}/enemy_ship.png", std::getenv("ASSET_FOLDER"));
-  m_enemyShip            = registry.registerTexture(enemyShipFilePath);
+  auto bossShipFilePath = std::format("{}/boss_ship.png", std::getenv("ASSET_FOLDER"));
+  m_bossShip            = registry.registerTexture(bossShipFilePath);
 
   auto bulletFilePath = std::format("{}/bullet.png", std::getenv("ASSET_FOLDER"));
   m_bullet            = registry.registerTexture(bulletFilePath);
@@ -150,9 +151,9 @@ void BossGameStage::render(IRenderer &renderer)
 
   for (const auto &enemy : m_level->enemies())
   {
-    renderer.renderTexture(m_enemyShip,
-                           converter.toScreenPos(enemy, enemyDimensions()),
-                           enemyDimensions());
+    renderer.renderTexture(m_bossShip,
+                           converter.toScreenPos(enemy, bossDimensions()),
+                           bossDimensions());
   }
 
   for (const auto &bullet : m_level->bullets())
@@ -174,14 +175,10 @@ void BossGameStage::render(IRenderer &renderer)
   }
 }
 
-namespace {
-constexpr auto WAVES_COUNT = 5;
-} // namespace
-
 void BossGameStage::initialize(Eigen::Vector3f screenDims)
 {
   Eigen::Vector3f worldDims = screenDims - SCORE_MENU_SIZE;
-  m_level                   = std::make_unique<Level>(WAVES_COUNT, std::move(worldDims));
+  m_level                   = std::make_unique<BossLevel>(std::move(worldDims));
   m_playerUpdater           = std::make_unique<PlayerUpdater>(*m_level);
 }
 
