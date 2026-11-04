@@ -7,7 +7,7 @@
 
 namespace invaderz {
 namespace {
-constexpr float SPACE_BETWEEN_WAVES = 80.0f;
+constexpr auto BOSS_Y_OFFSET = 200.0f;
 
 // The speeds are expressed in pixels per second
 constexpr auto PLAYER_SPEED = 280;
@@ -29,7 +29,7 @@ BossLevel::BossLevel(const Eigen::Vector3f &worldDims)
   m_boss = Enemy{
     .xInit = x,
     .worth = 1000,
-    .pos   = Eigen::Vector3f(x, worldDims(1), 0.0f),
+    .pos   = Eigen::Vector3f(x, worldDims(1) - BOSS_Y_OFFSET, 0.0f),
   };
 }
 
@@ -122,9 +122,23 @@ void BossLevel::removeOutOfBoundsBullets()
                 [this](const Eigen::Vector3f &bullet) { return bullet(1) > m_dimensions(1); });
 }
 
-void BossLevel::moveEnemies(const float /*elapsed*/)
+namespace {
+// Expressed in rotqtion per second.
+constexpr auto BOSS_ROTATIONAL_SPEED = 0.33;
+constexpr auto BOSS_MOTION_RADIUS    = 50.0f;
+} // namespace
+
+void BossLevel::moveEnemies(const float elapsed)
 {
-  // TODO: Implement this
+  m_totalElapsed += elapsed;
+
+  const auto x = m_boss->xInit
+                 + BOSS_MOTION_RADIUS
+                     * std::cos(m_totalElapsed * BOSS_ROTATIONAL_SPEED * std::numbers::pi_v<float>);
+  const auto y = m_dimensions(1) - BOSS_Y_OFFSET
+                 - BOSS_MOTION_RADIUS
+                     * std::sin(m_totalElapsed * BOSS_ROTATIONAL_SPEED * std::numbers::pi_v<float>);
+  m_boss->pos = Eigen::Vector3f(x, y, 0.0f);
 }
 
 namespace {
@@ -152,7 +166,9 @@ void BossLevel::handleCollisions(GameState &state, Effects &effects)
 
     bool bossKilled{false};
 
-    auto enemyRect = rectFromPositionAndDimensions(m_boss->pos, enemyDimensions());
+    // TODO: Ideally it should be a more complex bbox instead of just a rectangle to adapt
+    // for the shape of the boss.
+    auto enemyRect = rectFromPositionAndDimensions(m_boss->pos, 0.25f * bossDimensions());
 
     if (SDL_HasRectIntersectionFloat(&bulletRect, &enemyRect))
     {

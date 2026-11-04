@@ -34,6 +34,8 @@ class BossLevel : public ILevel, public runtime::CoreObject
 
   Eigen::Vector3f m_player{};
 
+  float m_totalElapsed{};
+
   void moveBullets(const float elapsed);
   void removeOutOfBoundsBullets();
   void moveEnemies(const float elapsed);
