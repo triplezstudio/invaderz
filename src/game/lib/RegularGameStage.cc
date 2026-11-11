@@ -47,6 +47,9 @@ void RegularGameStage::loadFonts(IFontRegistry &registry)
   auto filePath = std::format("{}/ArcadeClassic.ttf", std::getenv("ASSET_FOLDER"));
   m_font        = registry.registerFont(filePath, 16);
 
+  filePath    = std::format("{}/ArcadeClassic.ttf", std::getenv("ASSET_FOLDER"));
+  m_debugFont = registry.registerFont(filePath, 10);
+
   // Theoretically it would be better to check that sounds, textures and fonts have
   // been loaded but we use this as a proxy because it's the last function called by
   // the StageFactory.
@@ -134,7 +137,7 @@ namespace {
 constexpr auto PAUSE_TEXT = "PAUSE";
 }
 
-void RegularGameStage::render(IRenderer &renderer)
+void RegularGameStage::render(IRenderer &renderer, const FrameData &data)
 {
   renderer.renderTexture(m_background, Eigen::Vector3f::Zero(), m_screenDims);
 
@@ -163,7 +166,7 @@ void RegularGameStage::render(IRenderer &renderer)
                            -90.0f);
   }
 
-  renderScoreMenu(renderer);
+  renderScoreMenu(renderer, data);
 
   if (m_subscreen == Subscreen::PAUSE)
   {
@@ -207,7 +210,7 @@ void RegularGameStage::processActionKeys(const FrameData &data)
   }
 }
 
-void RegularGameStage::renderScoreMenu(IRenderer &renderer)
+void RegularGameStage::renderScoreMenu(IRenderer &renderer, const FrameData &data)
 {
   Eigen::Vector3f position(10.0f, 10.0f, 0.0f);
   auto text = std::format("Score {}", m_state->score);
@@ -223,6 +226,10 @@ void RegularGameStage::renderScoreMenu(IRenderer &renderer)
     position = Eigen::Vector3f(2.0f * m_screenDims(0) / 3.0f, 10.0f, 0.0f);
     renderer.renderText(m_font, "BOSS !!!", position);
   }
+
+  position = Eigen::Vector3f(2.0f, m_screenDims(1) - 30.0f, 0.0f);
+  text     = std::format("frame time: {}", data.frameTimeMicroseconds());
+  renderer.renderText(m_debugFont, text, position);
 }
 
 void RegularGameStage::renderExplosions(IRenderer &renderer)

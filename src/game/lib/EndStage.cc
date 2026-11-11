@@ -52,7 +52,7 @@ constexpr auto DEFEAT_TEXT  = "Too bad, you lost!";
 constexpr auto RESTART_TEXT = "Press Return key continue";
 } // namespace
 
-void EndStage::render(IRenderer &renderer)
+void EndStage::render(IRenderer &renderer, const FrameData & /*data*/)
 {
   Eigen::Vector3f titleDimensions(m_screenDims(0), m_screenDims(0), 0.0f);
   Eigen::Vector3f position(0.0f, 0.0f, 0.0f);

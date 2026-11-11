@@ -12,6 +12,8 @@ struct FrameData
 
   /// @param elapsed - the number of seconds elapsed in the last frame
   float elapsed{};
+
+  auto frameTimeMicroseconds() const -> int;
 };
 
 } // namespace invaderz

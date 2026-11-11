@@ -16,7 +16,7 @@ class EndStage : public IStage
   void loadFonts(IFontRegistry &registry) override;
 
   auto update(const FrameData &data) -> StageResult override;
-  void render(IRenderer &renderer) override;
+  void render(IRenderer &renderer, const FrameData &data) override;
 
   private:
   SoundId m_mainTheme{};

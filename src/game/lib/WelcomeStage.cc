@@ -38,7 +38,7 @@ auto WelcomeStage::update(const FrameData &data) -> StageResult
   if (data.state.anyKeyReleased())
   {
     result.finished = true;
-    result.next     = Screen::LEVEL;
+    result.next     = Screen::BOSS_LEVEL;
   }
 
   return overrideWithEscapeKey(data, result);
@@ -58,7 +58,7 @@ namespace {
 constexpr auto TITLE_TEXT = "Press any key to continue";
 } // namespace
 
-void WelcomeStage::render(IRenderer &renderer)
+void WelcomeStage::render(IRenderer &renderer, const FrameData & /*data*/)
 {
   Eigen::Vector3f titleDimensions(m_screenDims(0), m_screenDims(0), 0.0f);
   Eigen::Vector3f position(0.0f, 0.0f, 0.0f);

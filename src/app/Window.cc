@@ -76,7 +76,8 @@ void Window::initialize(const int width, const int height, const std::string_vie
     throw runtime::SdlException("Failed to initialize SDL TTF");
   }
 
-  if (!MIX_Init()) {
+  if (!MIX_Init())
+  {
     throw runtime::SdlException("Failed to initialize SDL mixer");
   }
 

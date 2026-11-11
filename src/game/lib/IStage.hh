@@ -25,7 +25,7 @@ class IStage
 
   virtual auto update(const FrameData &data) -> StageResult = 0;
   virtual void processSounds(IAudioEngine &engine);
-  virtual void render(IRenderer &renderer) = 0;
+  virtual void render(IRenderer &renderer, const FrameData &data) = 0;
 
   protected:
   GameState *m_state{};

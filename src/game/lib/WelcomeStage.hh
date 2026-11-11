@@ -17,7 +17,7 @@ class WelcomeStage : public IStage
 
   auto update(const FrameData &data) -> StageResult override;
   void processSounds(IAudioEngine &engine) override;
-  void render(IRenderer &renderer) override;
+  void render(IRenderer &renderer, const FrameData &data) override;
 
   private:
   SoundId m_mainTheme{};

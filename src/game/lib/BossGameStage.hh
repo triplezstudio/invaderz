@@ -22,7 +22,7 @@ class BossGameStage : public IStage, public runtime::CoreObject
 
   auto update(const FrameData &data) -> StageResult override;
   void processSounds(IAudioEngine &engine) override;
-  void render(IRenderer &renderer) override;
+  void render(IRenderer &renderer, const FrameData &data) override;
 
   private:
   SoundId m_fireSound{};
@@ -33,6 +33,7 @@ class BossGameStage : public IStage, public runtime::CoreObject
   TextureId m_bullet{};
   TextureId m_explosion{};
   FontId m_font{};
+  FontId m_debugFont{};
 
   Eigen::Vector3f m_screenDims{};
 
@@ -49,7 +50,7 @@ class BossGameStage : public IStage, public runtime::CoreObject
 
   void processActionKeys(const FrameData &data);
 
-  void renderScoreMenu(IRenderer &renderer);
+  void renderScoreMenu(IRenderer &renderer, const FrameData &data);
   void renderExplosions(IRenderer &renderer);
 };
 

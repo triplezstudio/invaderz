@@ -15,7 +15,7 @@ class Game : public runtime::CoreObject
 
   bool update(const FrameData &data);
   void processSounds(IAudioEngine &engine);
-  void render(IRenderer &renderer);
+  void render(IRenderer &renderer, const FrameData &data);
 
   private:
   StageFactory m_factory;

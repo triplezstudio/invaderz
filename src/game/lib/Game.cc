@@ -29,11 +29,11 @@ void Game::processSounds(IAudioEngine &engine)
   }
 }
 
-void Game::render(IRenderer &renderer)
+void Game::render(IRenderer &renderer, const FrameData &data)
 {
   if (m_stage != nullptr)
   {
-    m_stage->render(renderer);
+    m_stage->render(renderer, data);
   }
 }
 

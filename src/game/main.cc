@@ -37,14 +37,14 @@ int main(int /*argc*/, char * /*argv*/[])
   bool running = true;
   while (running)
   {
-    auto events = window.pollEvents();
-    running     = game.update(events);
+    auto frameData = window.pollEvents();
+    running        = game.update(frameData);
 
     audioEngine.update();
     game.processSounds(audioEngine);
 
     renderer->clear();
-    game.render(*renderer);
+    game.render(*renderer, frameData);
     renderer->render();
   }
 
