@@ -9,6 +9,7 @@ struct Enemy
 {
   float xInit{};
   int worth{};
+  int health{};
   Eigen::Vector3f pos{};
 };
 

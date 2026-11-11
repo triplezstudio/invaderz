@@ -178,7 +178,7 @@ void BossGameStage::render(IRenderer &renderer)
 void BossGameStage::initialize(Eigen::Vector3f screenDims)
 {
   Eigen::Vector3f worldDims = screenDims - SCORE_MENU_SIZE;
-  m_level                   = std::make_unique<BossLevel>(std::move(worldDims));
+  m_level                   = std::make_unique<BossLevel>(m_state->level + 1, std::move(worldDims));
   m_playerUpdater           = std::make_unique<PlayerUpdater>(*m_level);
 }
 

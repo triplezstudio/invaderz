@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include "Bullet.hh"
 #include "CoreObject.hh"
 #include "Enemy.hh"
 #include "ILevel.hh"
@@ -12,7 +13,7 @@ namespace invaderz {
 class BossLevel : public ILevel, public runtime::CoreObject
 {
   public:
-  BossLevel(const Eigen::Vector3f &worldDims);
+  BossLevel(const int levelIndex, const Eigen::Vector3f &worldDims);
   ~BossLevel() override = default;
 
   auto dims() const -> const Eigen::Vector3f & override;
@@ -24,13 +25,14 @@ class BossLevel : public ILevel, public runtime::CoreObject
 
   void update(GameState &state, const float elapsed, Effects &effects) override;
 
-  auto bullets() const -> const std::vector<Eigen::Vector3f> & override;
+  auto bullets() const -> std::vector<Eigen::Vector3f> override;
   auto enemies() const -> std::vector<Eigen::Vector3f> override;
 
   private:
   Eigen::Vector3f m_dimensions{};
   std::optional<Enemy> m_boss{};
-  std::vector<Eigen::Vector3f> m_bullets{};
+
+  std::vector<Bullet> m_bullets{};
 
   Eigen::Vector3f m_player{};
 

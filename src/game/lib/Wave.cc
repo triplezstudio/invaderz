@@ -19,7 +19,8 @@ constexpr auto ENEMY_WAVE_COUNT = 15;
 // wave spans.
 constexpr auto ENEMY_WAVE_PERCENTAGE = 0.9f;
 
-constexpr auto ENEMY_BASE_WORTH = 10;
+constexpr auto ENEMY_BASE_HEALTH = 1;
+constexpr auto ENEMY_BASE_WORTH  = 10;
 
 auto calculateXOffset(const float y, const Eigen::Vector3f dims) -> float
 {
@@ -42,7 +43,7 @@ auto calculateXOffset(const float y, const Eigen::Vector3f dims) -> float
 }
 } // namespace
 
-Wave::Wave(const Eigen::Vector3f &worldDims, const float yOffset)
+Wave::Wave(const Eigen::Vector3f &worldDims, const float yOffset, const int healthMultiplier)
 {
   const auto waveSpan = ENEMY_WAVE_PERCENTAGE * worldDims(0);
   const auto xStart   = (worldDims(0) - waveSpan) / 2.0f;
@@ -54,9 +55,10 @@ Wave::Wave(const Eigen::Vector3f &worldDims, const float yOffset)
     const auto y = worldDims(1) + yOffset;
 
     Enemy enemy{
-      .xInit = x,
-      .worth = ENEMY_BASE_WORTH * (i + 1),
-      .pos   = Eigen::Vector3f(x, y, 0.0f),
+      .xInit  = x,
+      .worth  = ENEMY_BASE_WORTH * (i + 1),
+      .health = ENEMY_BASE_HEALTH * healthMultiplier,
+      .pos    = Eigen::Vector3f(x, y, 0.0f),
     };
     enemies.push_back(enemy);
   }

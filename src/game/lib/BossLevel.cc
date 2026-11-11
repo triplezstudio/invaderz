@@ -9,12 +9,17 @@ namespace invaderz {
 namespace {
 constexpr auto BOSS_Y_OFFSET = 200.0f;
 
+constexpr auto BOSS_BASE_WORTH  = 1000;
+constexpr auto BOSS_BASE_HEALTH = 10;
+
+constexpr auto PLAYER_BULLET_DAMAGAE = 1;
+
 // The speeds are expressed in pixels per second
 constexpr auto PLAYER_SPEED = 280;
 constexpr auto BULLET_SPEED = 800;
 } // namespace
 
-BossLevel::BossLevel(const Eigen::Vector3f &worldDims)
+BossLevel::BossLevel(const int levelIndex, const Eigen::Vector3f &worldDims)
   : ILevel()
   , runtime::CoreObject("boss")
   , m_dimensions(worldDims)
@@ -27,9 +32,10 @@ BossLevel::BossLevel(const Eigen::Vector3f &worldDims)
   const auto x = worldDims(0) / 2.0f;
 
   m_boss = Enemy{
-    .xInit = x,
-    .worth = 1000,
-    .pos   = Eigen::Vector3f(x, worldDims(1) - BOSS_Y_OFFSET, 0.0f),
+    .xInit  = x,
+    .worth  = BOSS_BASE_WORTH,
+    .health = BOSS_BASE_HEALTH * levelIndex,
+    .pos    = Eigen::Vector3f(x, worldDims(1) - BOSS_Y_OFFSET, 0.0f),
   };
 }
 
@@ -63,7 +69,7 @@ void BossLevel::movePlayer(const Eigen::Vector3f &motion)
 
 void BossLevel::fire()
 {
-  m_bullets.emplace_back(m_player);
+  m_bullets.emplace_back(PLAYER_BULLET_DAMAGAE, m_player);
 }
 
 namespace {
@@ -92,9 +98,14 @@ void BossLevel::update(GameState &state, const float elapsed, Effects &effects)
   removeEmptyWaves();
 }
 
-auto BossLevel::bullets() const -> const std::vector<Eigen::Vector3f> &
+auto BossLevel::bullets() const -> std::vector<Eigen::Vector3f>
 {
-  return m_bullets;
+  std::vector<Eigen::Vector3f> out{};
+  std::transform(m_bullets.begin(),
+                 m_bullets.end(),
+                 std::back_inserter(out),
+                 [](const Bullet &bullet) { return bullet.pos; });
+  return out;
 }
 
 auto BossLevel::enemies() const -> std::vector<Eigen::Vector3f>
@@ -112,14 +123,13 @@ void BossLevel::moveBullets(const float elapsed)
 
   for (auto &bullet : m_bullets)
   {
-    bullet += motion;
+    bullet.pos += motion;
   }
 }
 
 void BossLevel::removeOutOfBoundsBullets()
 {
-  std::erase_if(m_bullets,
-                [this](const Eigen::Vector3f &bullet) { return bullet(1) > m_dimensions(1); });
+  std::erase_if(m_bullets, [this](const Bullet &bullet) { return bullet.pos(1) > m_dimensions(1); });
 }
 
 namespace {
@@ -158,13 +168,13 @@ void BossLevel::handleCollisions(GameState &state, Effects &effects)
 {
   std::deque<std::size_t> bulletsToRemove{};
 
+  bool bossKilled{false};
+
   // Enemies <-> bullets collisions
   for (std::size_t id = 0u; id < m_bullets.size(); ++id)
   {
-    auto bulletRect    = rectFromPositionAndDimensions(m_bullets[id], bulletDimensions());
+    auto bulletRect    = rectFromPositionAndDimensions(m_bullets[id].pos, bulletDimensions());
     bool bulletRemoved = false;
-
-    bool bossKilled{false};
 
     // TODO: Ideally it should be a more complex bbox instead of just a rectangle to adapt
     // for the shape of the boss.
@@ -172,22 +182,29 @@ void BossLevel::handleCollisions(GameState &state, Effects &effects)
 
     if (SDL_HasRectIntersectionFloat(&bulletRect, &enemyRect))
     {
+      m_boss->health -= m_bullets[id].damage;
+
       if (!bulletRemoved)
       {
         bulletsToRemove.push_front(id);
         bulletRemoved = true;
       }
 
-      state.score += m_boss->worth;
-      effects.explosions.emplace_back(m_boss->pos);
+      if (m_boss->health <= 0)
+      {
+        state.score += m_boss->worth;
+        effects.explosions.emplace_back(m_boss->pos);
 
-      bossKilled = true;
-    }
+        bossKilled = true;
 
-    if (bossKilled)
-    {
-      m_boss.reset();
+        break;
+      }
     }
+  }
+
+  if (bossKilled)
+  {
+    m_boss.reset();
   }
 
   for (const auto &id : bulletsToRemove)

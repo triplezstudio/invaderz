@@ -23,8 +23,8 @@ class ILevel
 
   virtual void update(GameState &state, const float elapsed, Effects &effects) = 0;
 
-  virtual auto bullets() const -> const std::vector<Eigen::Vector3f> & = 0;
-  virtual auto enemies() const -> std::vector<Eigen::Vector3f>         = 0;
+  virtual auto bullets() const -> std::vector<Eigen::Vector3f> = 0;
+  virtual auto enemies() const -> std::vector<Eigen::Vector3f> = 0;
 };
 
 using ILevelPtr = std::unique_ptr<ILevel>;

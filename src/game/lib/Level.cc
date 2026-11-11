@@ -9,12 +9,14 @@ namespace invaderz {
 namespace {
 constexpr float SPACE_BETWEEN_WAVES = 80.0f;
 
+constexpr auto PLAYER_BULLET_DAMAGAE = 1;
+
 // The speeds are expressed in pixels per second
 constexpr auto PLAYER_SPEED = 280;
 constexpr auto BULLET_SPEED = 800;
 } // namespace
 
-Level::Level(const int wavesCount, const Eigen::Vector3f &worldDims)
+Level::Level(const int levelIndex, const int wavesCount, const Eigen::Vector3f &worldDims)
   : ILevel()
   , runtime::CoreObject("level")
   , m_dimensions(worldDims)
@@ -26,7 +28,7 @@ Level::Level(const int wavesCount, const Eigen::Vector3f &worldDims)
 
   for (int id = 0; id < wavesCount; ++id)
   {
-    m_waves.emplace_back(m_dimensions, id * SPACE_BETWEEN_WAVES);
+    m_waves.emplace_back(m_dimensions, id * SPACE_BETWEEN_WAVES, levelIndex);
   }
 }
 
@@ -60,7 +62,7 @@ void Level::movePlayer(const Eigen::Vector3f &motion)
 
 void Level::fire()
 {
-  m_bullets.emplace_back(m_player);
+  m_bullets.emplace_back(PLAYER_BULLET_DAMAGAE, m_player);
 }
 
 namespace {
@@ -89,9 +91,14 @@ void Level::update(GameState &state, const float elapsed, Effects &effects)
   removeEmptyWaves();
 }
 
-auto Level::bullets() const -> const std::vector<Eigen::Vector3f> &
+auto Level::bullets() const -> std::vector<Eigen::Vector3f>
 {
-  return m_bullets;
+  std::vector<Eigen::Vector3f> out{};
+  std::transform(m_bullets.begin(),
+                 m_bullets.end(),
+                 std::back_inserter(out),
+                 [](const Bullet &bullet) { return bullet.pos; });
+  return out;
 }
 
 auto Level::enemies() const -> std::vector<Eigen::Vector3f>
@@ -115,14 +122,13 @@ void Level::moveBullets(const float elapsed)
 
   for (auto &bullet : m_bullets)
   {
-    bullet += motion;
+    bullet.pos += motion;
   }
 }
 
 void Level::removeOutOfBoundsBullets()
 {
-  std::erase_if(m_bullets,
-                [this](const Eigen::Vector3f &bullet) { return bullet(1) > m_dimensions(1); });
+  std::erase_if(m_bullets, [this](const Bullet &bullet) { return bullet.pos(1) > m_dimensions(1); });
 }
 
 void Level::moveEnemies(const float elapsed)
@@ -153,7 +159,7 @@ void Level::handleCollisions(GameState &state, Effects &effects)
   // Enemies <-> bullets collisions
   for (std::size_t id = 0u; id < m_bullets.size(); ++id)
   {
-    auto bulletRect    = rectFromPositionAndDimensions(m_bullets[id], bulletDimensions());
+    auto bulletRect    = rectFromPositionAndDimensions(m_bullets[id].pos, bulletDimensions());
     bool bulletRemoved = false;
 
     for (auto &wave : m_waves)
@@ -166,16 +172,21 @@ void Level::handleCollisions(GameState &state, Effects &effects)
 
         if (SDL_HasRectIntersectionFloat(&bulletRect, &enemyRect))
         {
+          wave.enemies[idE].health -= m_bullets[id].damage;
+
           if (!bulletRemoved)
           {
             bulletsToRemove.push_front(id);
             bulletRemoved = true;
           }
 
-          state.score += wave.enemies[idE].worth;
-          effects.explosions.emplace_back(wave.enemies[idE].pos);
+          if (wave.enemies[idE].health <= 0)
+          {
+            state.score += wave.enemies[idE].worth;
+            effects.explosions.emplace_back(wave.enemies[idE].pos);
 
-          enemiesToRemove.push_front(idE);
+            enemiesToRemove.push_front(idE);
+          }
         }
       }
 

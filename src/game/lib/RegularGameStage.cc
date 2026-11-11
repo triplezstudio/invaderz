@@ -181,8 +181,8 @@ constexpr auto WAVES_COUNT = 5;
 void RegularGameStage::initialize(Eigen::Vector3f screenDims)
 {
   Eigen::Vector3f worldDims = screenDims - SCORE_MENU_SIZE;
-  m_level                   = std::make_unique<Level>(WAVES_COUNT, std::move(worldDims));
-  m_playerUpdater           = std::make_unique<PlayerUpdater>(*m_level);
+  m_level         = std::make_unique<Level>(m_state->level + 1, WAVES_COUNT, std::move(worldDims));
+  m_playerUpdater = std::make_unique<PlayerUpdater>(*m_level);
 }
 
 void RegularGameStage::processActionKeys(const FrameData &data)
