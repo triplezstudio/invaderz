@@ -98,14 +98,9 @@ void BossLevel::update(GameState &state, const float elapsed, Effects &effects)
   removeEmptyWaves();
 }
 
-auto BossLevel::bullets() const -> std::vector<Eigen::Vector3f>
+auto BossLevel::bullets() const -> std::vector<Bullet>
 {
-  std::vector<Eigen::Vector3f> out{};
-  std::transform(m_bullets.begin(),
-                 m_bullets.end(),
-                 std::back_inserter(out),
-                 [](const Bullet &bullet) { return bullet.pos; });
-  return out;
+  return m_bullets;
 }
 
 auto BossLevel::enemies() const -> std::vector<Eigen::Vector3f>

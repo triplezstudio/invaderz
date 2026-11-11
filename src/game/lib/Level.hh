@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include "Bullet.hh"
 #include "CoreObject.hh"
 #include "ILevel.hh"
 #include "Wave.hh"
@@ -25,16 +24,18 @@ class Level : public ILevel, public runtime::CoreObject
 
   void update(GameState &state, const float elapsed, Effects &effects) override;
 
-  auto bullets() const -> std::vector<Eigen::Vector3f> override;
+  auto bullets() const -> std::vector<Bullet> override;
   auto enemies() const -> std::vector<Eigen::Vector3f> override;
 
   private:
   Eigen::Vector3f m_dimensions{};
   std::vector<Wave> m_waves{};
   std::vector<Bullet> m_bullets{};
+  std::vector<Bullet> m_enemiesBullets{};
 
   Eigen::Vector3f m_player{};
 
+  void fireEnemiesGuns(const float elapsed);
   void moveBullets(const float elapsed);
   void removeOutOfBoundsBullets();
   void moveEnemies(const float elapsed);

@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include "Bullet.hh"
 #include "CoreObject.hh"
 #include "Enemy.hh"
 #include "ILevel.hh"
@@ -25,7 +24,7 @@ class BossLevel : public ILevel, public runtime::CoreObject
 
   void update(GameState &state, const float elapsed, Effects &effects) override;
 
-  auto bullets() const -> std::vector<Eigen::Vector3f> override;
+  auto bullets() const -> std::vector<Bullet> override;
   auto enemies() const -> std::vector<Eigen::Vector3f> override;
 
   private:

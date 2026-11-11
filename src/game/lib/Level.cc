@@ -62,7 +62,7 @@ void Level::movePlayer(const Eigen::Vector3f &motion)
 
 void Level::fire()
 {
-  m_bullets.emplace_back(PLAYER_BULLET_DAMAGAE, m_player);
+  m_bullets.emplace_back(PLAYER_BULLET_DAMAGAE, m_player, false);
 }
 
 namespace {
@@ -83,6 +83,7 @@ void Level::update(GameState &state, const float elapsed, Effects &effects)
     return;
   }
 
+  fireEnemiesGuns(elapsed);
   moveBullets(elapsed);
   removeOutOfBoundsBullets();
   moveEnemies(elapsed);
@@ -91,14 +92,9 @@ void Level::update(GameState &state, const float elapsed, Effects &effects)
   removeEmptyWaves();
 }
 
-auto Level::bullets() const -> std::vector<Eigen::Vector3f>
+auto Level::bullets() const -> std::vector<Bullet>
 {
-  std::vector<Eigen::Vector3f> out{};
-  std::transform(m_bullets.begin(),
-                 m_bullets.end(),
-                 std::back_inserter(out),
-                 [](const Bullet &bullet) { return bullet.pos; });
-  return out;
+  return m_bullets;
 }
 
 auto Level::enemies() const -> std::vector<Eigen::Vector3f>
@@ -116,13 +112,39 @@ auto Level::enemies() const -> std::vector<Eigen::Vector3f>
   return out;
 }
 
+void Level::fireEnemiesGuns(const float elapsed)
+{
+  for (auto &wave : m_waves)
+  {
+    for (std::size_t idE = 0u; idE < wave.enemies.size(); ++idE)
+    {
+      auto &enemy = wave.enemies[idE];
+
+      enemy.gun.sinceLastFire += elapsed;
+
+      if (enemy.gun.sinceLastFire >= enemy.gun.firingInterval)
+      {
+        m_bullets.emplace_back(enemy.gun.damage, enemy.pos, true);
+        enemy.gun.sinceLastFire = 0;
+      }
+    }
+  }
+}
+
 void Level::moveBullets(const float elapsed)
 {
   Eigen::Vector3f motion(0, elapsed * BULLET_SPEED, 0.0f);
 
   for (auto &bullet : m_bullets)
   {
-    bullet.pos += motion;
+    if (bullet.canDamagePlayer == true)
+    {
+      bullet.pos -= motion;
+    }
+    else
+    {
+      bullet.pos += motion;
+    }
   }
 }
 
@@ -159,6 +181,11 @@ void Level::handleCollisions(GameState &state, Effects &effects)
   // Enemies <-> bullets collisions
   for (std::size_t id = 0u; id < m_bullets.size(); ++id)
   {
+    if (m_bullets[id].canDamagePlayer == true)
+    {
+      continue;
+    }
+
     auto bulletRect    = rectFromPositionAndDimensions(m_bullets[id].pos, bulletDimensions());
     bool bulletRemoved = false;
 

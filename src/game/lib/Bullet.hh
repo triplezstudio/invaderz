@@ -9,6 +9,7 @@ struct Bullet
 {
   int damage{};
   Eigen::Vector3f pos{};
+  bool canDamagePlayer{false};
 };
 
 } // namespace invaderz

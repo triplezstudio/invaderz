@@ -39,6 +39,9 @@ void BossGameStage::loadTextures(ITextureRegistry &registry)
   auto bulletFilePath = std::format("{}/bullet.png", std::getenv("ASSET_FOLDER"));
   m_bullet            = registry.registerTexture(bulletFilePath);
 
+  auto enemyBulletFilePath = std::format("{}/enemy_bullet.png", std::getenv("ASSET_FOLDER"));
+  m_enemyBullet            = registry.registerTexture(enemyBulletFilePath);
+
   auto explosionFilePath = std::format("{}/explosion.png", std::getenv("ASSET_FOLDER"));
   m_explosion            = registry.registerTexture(explosionFilePath);
 }
@@ -161,10 +164,20 @@ void BossGameStage::render(IRenderer &renderer, const FrameData &data)
 
   for (const auto &bullet : m_level->bullets())
   {
-    renderer.renderTexture(m_bullet,
-                           converter.toScreenPos(bullet, bulletDimensions()),
-                           bulletDimensions(),
-                           -90.0f);
+    if (bullet.canDamagePlayer)
+    {
+      renderer.renderTexture(m_enemyBullet,
+                             converter.toScreenPos(bullet.pos, bulletDimensions()),
+                             bulletDimensions(),
+                             90.0f);
+    }
+    else
+    {
+      renderer.renderTexture(m_bullet,
+                             converter.toScreenPos(bullet.pos, bulletDimensions()),
+                             bulletDimensions(),
+                             -90.0f);
+    }
   }
 
   renderScoreMenu(renderer, data);

@@ -10,7 +10,7 @@ struct Wave
 {
   std::vector<Enemy> enemies{};
 
-  Wave(const Eigen::Vector3f &worldDims, const float yOffset, const int healthMultiplier);
+  Wave(const Eigen::Vector3f &worldDims, const float yOffset, const int levelMultiplier);
   ~Wave() = default;
 
   bool empty() const;

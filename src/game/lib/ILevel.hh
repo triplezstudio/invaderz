@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include "Bullet.hh"
 #include "Effects.hh"
 #include "GameState.hh"
 #include <eigen3/Eigen/Eigen>
@@ -23,7 +24,7 @@ class ILevel
 
   virtual void update(GameState &state, const float elapsed, Effects &effects) = 0;
 
-  virtual auto bullets() const -> std::vector<Eigen::Vector3f> = 0;
+  virtual auto bullets() const -> std::vector<Bullet>          = 0;
   virtual auto enemies() const -> std::vector<Eigen::Vector3f> = 0;
 };
 

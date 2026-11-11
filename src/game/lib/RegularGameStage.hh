@@ -31,6 +31,7 @@ class RegularGameStage : public IStage, public runtime::CoreObject
   TextureId m_spaceShip{};
   TextureId m_enemyShip{};
   TextureId m_bullet{};
+  TextureId m_enemyBullet{};
   TextureId m_explosion{};
   FontId m_font{};
   FontId m_debugFont{};
