@@ -14,9 +14,12 @@ constexpr auto BOSS_BASE_HEALTH = 10;
 
 constexpr auto PLAYER_BULLET_DAMAGAE = 1;
 
+constexpr auto BOSS_BULLET_COUNT = 3;
+
 // The speeds are expressed in pixels per second
-constexpr auto PLAYER_SPEED = 280;
-constexpr auto BULLET_SPEED = 800;
+constexpr auto PLAYER_SPEED        = 280;
+constexpr auto PLAYER_BULLET_SPEED = 800;
+constexpr auto BOSS_BULLET_SPEED   = 150;
 } // namespace
 
 BossLevel::BossLevel(const int levelIndex, const Eigen::Vector3f &worldDims)
@@ -31,12 +34,15 @@ BossLevel::BossLevel(const int levelIndex, const Eigen::Vector3f &worldDims)
 
   const auto x = worldDims(0) / 2.0f;
 
-  m_boss = Enemy{
-    .xInit  = x,
-    .worth  = BOSS_BASE_WORTH,
-    .health = BOSS_BASE_HEALTH * levelIndex,
-    .pos    = Eigen::Vector3f(x, worldDims(1) - BOSS_Y_OFFSET, 0.0f),
-  };
+  m_boss = Enemy{.xInit  = x,
+                 .worth  = BOSS_BASE_WORTH,
+                 .health = BOSS_BASE_HEALTH * levelIndex,
+                 .pos    = Eigen::Vector3f(x, worldDims(1) - BOSS_Y_OFFSET, 0.0f),
+                 .gun    = Gun{
+                      .firingInterval = 2.0f,
+                      .sinceLastFire  = 0,
+                      .damage         = 2,
+                 }};
 }
 
 auto BossLevel::dims() const -> const Eigen::Vector3f &
@@ -90,6 +96,7 @@ void BossLevel::update(GameState &state, const float elapsed, Effects &effects)
     return;
   }
 
+  fireEnemiesGuns(elapsed);
   moveBullets(elapsed);
   removeOutOfBoundsBullets();
   moveEnemies(elapsed);
@@ -112,13 +119,44 @@ auto BossLevel::enemies() const -> std::vector<Eigen::Vector3f>
   return std::vector<Eigen::Vector3f>{};
 }
 
+void BossLevel::fireEnemiesGuns(const float elapsed)
+{
+  m_boss->gun.sinceLastFire += elapsed;
+
+  if (m_boss->gun.sinceLastFire < m_boss->gun.firingInterval)
+  {
+    return;
+  }
+
+  m_boss->gun.sinceLastFire = 0;
+
+  const auto xInit    = m_boss->pos(0) - bossDimensions()(0) / 2.0f;
+  const auto y        = m_boss->pos(1) - bossDimensions()(1) / 2.0f;
+  const auto interval = bossDimensions()(0) / BOSS_BULLET_COUNT;
+
+  for (auto id = 0; id < BOSS_BULLET_COUNT; ++id)
+  {
+    const auto x = xInit + id * interval;
+    Eigen::Vector3f bulletPos(x, y, 0.0f);
+    m_bullets.emplace_back(m_boss->gun.damage, bulletPos, true);
+  }
+}
+
 void BossLevel::moveBullets(const float elapsed)
 {
-  Eigen::Vector3f motion(0, elapsed * BULLET_SPEED, 0.0f);
+  Eigen::Vector3f playerMotion(0, elapsed * PLAYER_BULLET_SPEED, 0.0f);
+  Eigen::Vector3f bossMotion(0, elapsed * BOSS_BULLET_SPEED, 0.0f);
 
   for (auto &bullet : m_bullets)
   {
-    bullet.pos += motion;
+    if (bullet.canDamagePlayer == true)
+    {
+      bullet.pos -= bossMotion;
+    }
+    else
+    {
+      bullet.pos += playerMotion;
+    }
   }
 }
 
@@ -194,6 +232,34 @@ void BossLevel::handleCollisions(GameState &state, Effects &effects)
 
         break;
       }
+    }
+  }
+
+  // Player <-> bullets collisions
+  for (std::size_t id = 0u; id < m_bullets.size(); ++id)
+  {
+    if (m_bullets[id].canDamagePlayer != true)
+    {
+      continue;
+    }
+
+    auto bulletRect    = rectFromPositionAndDimensions(m_bullets[id].pos, bulletDimensions());
+    bool bulletRemoved = false;
+
+    auto playerRect = rectFromPositionAndDimensions(m_player, playerDimensions());
+
+    if (SDL_HasRectIntersectionFloat(&bulletRect, &playerRect))
+    {
+      state.lives -= m_bullets[id].damage;
+
+      if (!bulletRemoved)
+      {
+        bulletsToRemove.push_front(id);
+        bulletRemoved = true;
+      }
+
+      // TODO: Maybe have another explosion?
+      effects.explosions.emplace_back(m_player);
     }
   }
 

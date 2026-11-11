@@ -37,6 +37,7 @@ class BossLevel : public ILevel, public runtime::CoreObject
 
   float m_totalElapsed{};
 
+  void fireEnemiesGuns(const float elapsed);
   void moveBullets(const float elapsed);
   void removeOutOfBoundsBullets();
   void moveEnemies(const float elapsed);

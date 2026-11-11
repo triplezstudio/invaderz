@@ -229,8 +229,42 @@ void Level::handleCollisions(GameState &state, Effects &effects)
     m_bullets.erase(m_bullets.begin() + id);
   }
 
+  // Player <-> bullets collisions
+  for (std::size_t id = 0u; id < m_bullets.size(); ++id)
+  {
+    if (m_bullets[id].canDamagePlayer != true)
+    {
+      continue;
+    }
+
+    auto bulletRect    = rectFromPositionAndDimensions(m_bullets[id].pos, bulletDimensions());
+    bool bulletRemoved = false;
+
+    auto playerRect = rectFromPositionAndDimensions(m_player, playerDimensions());
+
+    if (SDL_HasRectIntersectionFloat(&bulletRect, &playerRect))
+    {
+      state.lives -= m_bullets[id].damage;
+
+      if (!bulletRemoved)
+      {
+        bulletsToRemove.push_front(id);
+        bulletRemoved = true;
+      }
+
+      // TODO: Maybe have another explosion?
+      effects.explosions.emplace_back(m_player);
+    }
+  }
+
+  for (const auto &id : bulletsToRemove)
+  {
+    m_bullets.erase(m_bullets.begin() + id);
+  }
+
   auto playerRect = rectFromPositionAndDimensions(m_player, playerDimensions());
 
+  // Enemies reaching the bottom -> lives are lost
   for (auto &wave : m_waves)
   {
     std::deque<std::size_t> enemiesToRemove{};
