@@ -59,16 +59,19 @@ Wave::Wave(const Eigen::Vector3f &worldDims, const float yOffset, const int leve
   std::uniform_real_distribution<float> vxJitter(1.0f, 3.0f);
   std::uniform_real_distribution<float> vyJitter(-5.0f, 40.0f);
 
+  const auto xMin = 1.0f * OSCILLATION_AMPLITUDE;
+  const auto xMax = worldDims(0) - OSCILLATION_AMPLITUDE;
+
   for (int i = 0; i < enemyCount; ++i)
   {
-    const auto x = xStart + i * interval;
+    const auto x = std::clamp(xStart + i * interval + xJitter(gen), xMin, xMax);
     const auto y = worldDims(1) + yOffset + yJitter(gen);
 
     const auto vx = vxJitter(gen);
     const auto vy = ENEMY_SPEED + vyJitter(gen);
 
     Enemy enemy{
-      .xInit  = x + xJitter(gen),
+      .xInit  = x,
       .worth  = ENEMY_BASE_WORTH * (i + 1),
       .health = ENEMY_BASE_HEALTH * levelMultiplier,
       .speed  = Eigen::Vector3f(vx, vy, 0.0f),
@@ -89,7 +92,7 @@ void Wave::move(const float elapsed, const Eigen::Vector3f &worldDims)
   for (auto &enemy : enemies)
   {
     const auto xOffset = calculateXOffset(enemy.pos(1), enemy.speed(0), worldDims);
-    enemy.pos(0)       = enemy.xInit + xOffset;
+    enemy.pos(0)       = std::clamp(enemy.xInit + xOffset, 0.0f, worldDims(0));
     enemy.pos(1) -= (elapsed * enemy.speed(1));
   }
 }
