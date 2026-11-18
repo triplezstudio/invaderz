@@ -37,12 +37,14 @@ BossLevel::BossLevel(const int levelIndex, const Eigen::Vector3f &worldDims)
   m_boss = Enemy{.xInit  = x,
                  .worth  = BOSS_BASE_WORTH,
                  .health = BOSS_BASE_HEALTH * levelIndex,
-                 .pos    = Eigen::Vector3f(x, worldDims(1) - BOSS_Y_OFFSET, 0.0f),
-                 .gun    = Gun{
-                      .strategy           = FiringStrategy::CONSTANT,
-                      .nextFiringInterval = 2.0f,
-                      .sinceLastFire      = 0,
-                      .damage             = 2,
+                 // Unused at the moment
+                 .speed = Eigen::Vector3f::Zero(),
+                 .pos   = Eigen::Vector3f(x, worldDims(1) - BOSS_Y_OFFSET, 0.0f),
+                 .gun   = Gun{
+                     .strategy           = FiringStrategy::CONSTANT,
+                     .nextFiringInterval = 2.0f,
+                     .sinceLastFire      = 0,
+                     .damage             = 2,
                  }};
 }
 

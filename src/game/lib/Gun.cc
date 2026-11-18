@@ -2,8 +2,6 @@
 #include "Gun.hh"
 #include <random>
 
-#include <iostream>
-
 namespace invaderz {
 namespace {
 constexpr auto MIN_FIRING_SPREAD = 0.25f;

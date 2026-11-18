@@ -11,6 +11,7 @@ struct Enemy
   float xInit{};
   int worth{};
   int health{};
+  Eigen::Vector3f speed{};
   Eigen::Vector3f pos{};
   Gun gun{};
 };
