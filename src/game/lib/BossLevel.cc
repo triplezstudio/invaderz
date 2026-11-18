@@ -39,9 +39,10 @@ BossLevel::BossLevel(const int levelIndex, const Eigen::Vector3f &worldDims)
                  .health = BOSS_BASE_HEALTH * levelIndex,
                  .pos    = Eigen::Vector3f(x, worldDims(1) - BOSS_Y_OFFSET, 0.0f),
                  .gun    = Gun{
-                      .firingInterval = 2.0f,
-                      .sinceLastFire  = 0,
-                      .damage         = 2,
+                      .strategy           = FiringStrategy::CONSTANT,
+                      .nextFiringInterval = 2.0f,
+                      .sinceLastFire      = 0,
+                      .damage             = 2,
                  }};
 }
 
@@ -123,12 +124,12 @@ void BossLevel::fireEnemiesGuns(const float elapsed)
 {
   m_boss->gun.sinceLastFire += elapsed;
 
-  if (m_boss->gun.sinceLastFire < m_boss->gun.firingInterval)
+  if (m_boss->gun.sinceLastFire < m_boss->gun.nextFiringInterval)
   {
     return;
   }
 
-  m_boss->gun.sinceLastFire = 0;
+  m_boss->gun.prepareForNextShot();
 
   const auto xInit    = m_boss->pos(0) - bossDimensions()(0) / 2.0f;
   const auto y        = m_boss->pos(1) - bossDimensions()(1) / 2.0f;

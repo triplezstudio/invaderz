@@ -125,13 +125,13 @@ void RegularGameStage::processSounds(IAudioEngine &engine)
 {
   while (m_shotsToFire > 0)
   {
-    engine.playOnce(m_fireSound, 0.05f);
+    engine.playOnce(m_fireSound, 0.015f);
     --m_shotsToFire;
   }
 
   while (m_explosionsToStart > 0)
   {
-    engine.playOnce(m_explosionSound, 0.05f);
+    engine.playOnce(m_explosionSound, 0.015f);
     --m_explosionsToStart;
   }
 }

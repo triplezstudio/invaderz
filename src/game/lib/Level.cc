@@ -122,10 +122,10 @@ void Level::fireEnemiesGuns(const float elapsed)
 
       enemy.gun.sinceLastFire += elapsed;
 
-      if (enemy.gun.sinceLastFire >= enemy.gun.firingInterval)
+      if (enemy.gun.sinceLastFire >= enemy.gun.nextFiringInterval)
       {
         m_bullets.emplace_back(enemy.gun.damage, enemy.pos, true);
-        enemy.gun.sinceLastFire = 0;
+        enemy.gun.prepareForNextShot();
       }
     }
   }

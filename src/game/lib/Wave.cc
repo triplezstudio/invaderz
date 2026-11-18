@@ -1,5 +1,6 @@
 
 #include "Wave.hh"
+#include <random>
 
 namespace invaderz {
 namespace {
@@ -21,7 +22,6 @@ constexpr auto ENEMY_WAVE_PERCENTAGE = 0.9f;
 
 constexpr auto ENEMY_BASE_HEALTH = 1;
 constexpr auto ENEMY_BASE_WORTH  = 10;
-constexpr auto ENEMY_BASE_DAMAGE = 1;
 
 auto calculateXOffset(const float y, const Eigen::Vector3f dims) -> float
 {
@@ -60,9 +60,7 @@ Wave::Wave(const Eigen::Vector3f &worldDims, const float yOffset, const int leve
       .worth  = ENEMY_BASE_WORTH * (i + 1),
       .health = ENEMY_BASE_HEALTH * levelMultiplier,
       .pos    = Eigen::Vector3f(x, y, 0.0f),
-      .gun    = Gun{.firingInterval = 1.0f / levelMultiplier,
-                    .sinceLastFire  = {},
-                    .damage         = ENEMY_BASE_DAMAGE * levelMultiplier},
+      .gun    = createLevelBasedGun(levelMultiplier),
     };
     enemies.push_back(enemy);
   }
