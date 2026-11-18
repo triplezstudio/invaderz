@@ -7,6 +7,7 @@ void GameState::reset()
 {
   lives = 15;
   score = 0;
+  level = 0;
 }
 
 } // namespace invaderz
