@@ -12,8 +12,9 @@ constexpr float SPACE_BETWEEN_WAVES = 80.0f;
 constexpr auto PLAYER_BULLET_DAMAGAE = 1;
 
 // The speeds are expressed in pixels per second
-constexpr auto PLAYER_SPEED = 280;
-constexpr auto BULLET_SPEED = 800;
+constexpr auto PLAYER_SPEED        = 300;
+constexpr auto PLAYER_BULLET_SPEED = 800;
+constexpr auto ENEMY_BULLET_SPEED  = 300;
 } // namespace
 
 Level::Level(const int levelIndex, const int wavesCount, const Eigen::Vector3f &worldDims)
@@ -133,17 +134,18 @@ void Level::fireEnemiesGuns(const float elapsed)
 
 void Level::moveBullets(const float elapsed)
 {
-  Eigen::Vector3f motion(0, elapsed * BULLET_SPEED, 0.0f);
+  Eigen::Vector3f playerMotion(0, elapsed * PLAYER_BULLET_SPEED, 0.0f);
+  Eigen::Vector3f enemyMotion(0, elapsed * ENEMY_BULLET_SPEED, 0.0f);
 
   for (auto &bullet : m_bullets)
   {
     if (bullet.canDamagePlayer == true)
     {
-      bullet.pos -= motion;
+      bullet.pos -= enemyMotion;
     }
     else
     {
-      bullet.pos += motion;
+      bullet.pos += playerMotion;
     }
   }
 }
