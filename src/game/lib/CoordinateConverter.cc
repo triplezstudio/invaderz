@@ -2,7 +2,6 @@
 #include "CoordinateConverter.hh"
 
 #include "VectorUtils.hh"
-#include <iostream>
 
 namespace invaderz {
 

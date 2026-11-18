@@ -23,6 +23,8 @@ constexpr auto ENEMY_WAVE_PERCENTAGE = 0.9f;
 constexpr auto ENEMY_BASE_HEALTH = 1;
 constexpr auto ENEMY_BASE_WORTH  = 10;
 
+constexpr auto ENEMY_BULLET_SPEED = 300;
+
 auto calculateXOffset(const float y, const float xSpeed, const Eigen::Vector3f dims) -> float
 {
   // The world has `dims` for dimensions. Each enemy should complete `OSCILLATION_COUNT` oscillations
@@ -75,7 +77,7 @@ Wave::Wave(const Eigen::Vector3f &worldDims, const float yOffset, const int leve
       .health = ENEMY_BASE_HEALTH * levelMultiplier,
       .speed  = Eigen::Vector3f(vx, vy, 0.0f),
       .pos    = Eigen::Vector3f(x, y, 0.0f),
-      .gun    = createLevelBasedGun(levelMultiplier),
+      .gun    = createLevelBasedGun(levelMultiplier, ENEMY_BULLET_SPEED),
     };
     enemies.push_back(enemy);
   }

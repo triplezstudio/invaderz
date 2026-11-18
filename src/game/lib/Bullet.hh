@@ -9,6 +9,7 @@ struct Bullet
 {
   int damage{};
   Eigen::Vector3f pos{};
+  Eigen::Vector3f speed{};
   bool canDamagePlayer{false};
 };
 

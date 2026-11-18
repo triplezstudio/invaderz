@@ -14,8 +14,6 @@ constexpr auto BOSS_BASE_HEALTH = 10;
 
 constexpr auto PLAYER_BULLET_DAMAGAE = 1;
 
-constexpr auto BOSS_BULLET_COUNT = 3;
-
 // The speeds are expressed in pixels per second
 constexpr auto PLAYER_SPEED        = 280;
 constexpr auto PLAYER_BULLET_SPEED = 800;
@@ -41,10 +39,12 @@ BossLevel::BossLevel(const int levelIndex, const Eigen::Vector3f &worldDims)
                  .speed = Eigen::Vector3f::Zero(),
                  .pos   = Eigen::Vector3f(x, worldDims(1) - BOSS_Y_OFFSET, 0.0f),
                  .gun   = Gun{
+                     .pattern            = FiringPattern::STAR,
                      .strategy           = FiringStrategy::CONSTANT,
                      .nextFiringInterval = 2.0f,
                      .sinceLastFire      = 0,
                      .damage             = 2,
+                     .bulletSpeed        = BOSS_BULLET_SPEED,
                  }};
 }
 
@@ -78,7 +78,13 @@ void BossLevel::movePlayer(const Eigen::Vector3f &motion)
 
 void BossLevel::fire()
 {
-  m_bullets.emplace_back(PLAYER_BULLET_DAMAGAE, m_player);
+  Bullet bullet{
+    .damage          = PLAYER_BULLET_DAMAGAE,
+    .pos             = m_player,
+    .speed           = Eigen::Vector3f(0.0f, PLAYER_BULLET_SPEED, 0.0f),
+    .canDamagePlayer = false,
+  };
+  m_bullets.emplace_back(bullet);
 }
 
 namespace {
@@ -124,42 +130,15 @@ auto BossLevel::enemies() const -> std::vector<Eigen::Vector3f>
 
 void BossLevel::fireEnemiesGuns(const float elapsed)
 {
-  m_boss->gun.sinceLastFire += elapsed;
-
-  if (m_boss->gun.sinceLastFire < m_boss->gun.nextFiringInterval)
-  {
-    return;
-  }
-
-  m_boss->gun.prepareForNextShot();
-
-  const auto xInit    = m_boss->pos(0) - bossDimensions()(0) / 2.0f;
-  const auto y        = m_boss->pos(1);
-  const auto interval = bossDimensions()(0) / BOSS_BULLET_COUNT;
-
-  for (auto id = 0; id < BOSS_BULLET_COUNT; ++id)
-  {
-    const auto x = xInit + id * interval;
-    Eigen::Vector3f bulletPos(x, y, 0.0f);
-    m_bullets.emplace_back(m_boss->gun.damage, bulletPos, true);
-  }
+  const auto bullets = m_boss->gun.tryFire(elapsed, m_boss->pos);
+  m_bullets.insert(std::end(m_bullets), std::begin(bullets), std::end(bullets));
 }
 
 void BossLevel::moveBullets(const float elapsed)
 {
-  Eigen::Vector3f playerMotion(0, elapsed * PLAYER_BULLET_SPEED, 0.0f);
-  Eigen::Vector3f bossMotion(0, elapsed * BOSS_BULLET_SPEED, 0.0f);
-
   for (auto &bullet : m_bullets)
   {
-    if (bullet.canDamagePlayer == true)
-    {
-      bullet.pos -= bossMotion;
-    }
-    else
-    {
-      bullet.pos += playerMotion;
-    }
+    bullet.pos += bullet.speed * elapsed;
   }
 }
 

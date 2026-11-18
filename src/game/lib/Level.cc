@@ -14,7 +14,6 @@ constexpr auto PLAYER_BULLET_DAMAGAE = 1;
 // The speeds are expressed in pixels per second
 constexpr auto PLAYER_SPEED        = 300;
 constexpr auto PLAYER_BULLET_SPEED = 800;
-constexpr auto ENEMY_BULLET_SPEED  = 300;
 } // namespace
 
 Level::Level(const int levelIndex, const int wavesCount, const Eigen::Vector3f &worldDims)
@@ -63,7 +62,13 @@ void Level::movePlayer(const Eigen::Vector3f &motion)
 
 void Level::fire()
 {
-  m_bullets.emplace_back(PLAYER_BULLET_DAMAGAE, m_player, false);
+  Bullet bullet{
+    .damage          = PLAYER_BULLET_DAMAGAE,
+    .pos             = m_player,
+    .speed           = Eigen::Vector3f(0.0f, PLAYER_BULLET_SPEED, 0.0f),
+    .canDamagePlayer = false,
+  };
+  m_bullets.emplace_back(bullet);
 }
 
 namespace {
@@ -119,34 +124,18 @@ void Level::fireEnemiesGuns(const float elapsed)
   {
     for (std::size_t idE = 0u; idE < wave.enemies.size(); ++idE)
     {
-      auto &enemy = wave.enemies[idE];
-
-      enemy.gun.sinceLastFire += elapsed;
-
-      if (enemy.gun.sinceLastFire >= enemy.gun.nextFiringInterval)
-      {
-        m_bullets.emplace_back(enemy.gun.damage, enemy.pos, true);
-        enemy.gun.prepareForNextShot();
-      }
+      auto &enemy        = wave.enemies[idE];
+      const auto bullets = enemy.gun.tryFire(elapsed, enemy.pos);
+      m_bullets.insert(std::end(m_bullets), std::begin(bullets), std::end(bullets));
     }
   }
 }
 
 void Level::moveBullets(const float elapsed)
 {
-  Eigen::Vector3f playerMotion(0, elapsed * PLAYER_BULLET_SPEED, 0.0f);
-  Eigen::Vector3f enemyMotion(0, elapsed * ENEMY_BULLET_SPEED, 0.0f);
-
   for (auto &bullet : m_bullets)
   {
-    if (bullet.canDamagePlayer == true)
-    {
-      bullet.pos -= enemyMotion;
-    }
-    else
-    {
-      bullet.pos += playerMotion;
-    }
+    bullet.pos += bullet.speed * elapsed;
   }
 }
 

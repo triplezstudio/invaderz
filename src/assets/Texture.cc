@@ -2,8 +2,6 @@
 #include "Texture.hh"
 #include "SdlException.hh"
 
-#include <iostream>
-
 namespace invaderz::assets {
 
 Texture::Texture(const std::string_view filePath, ITextureLoader *loader)
