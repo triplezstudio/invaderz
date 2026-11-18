@@ -134,7 +134,7 @@ void BossLevel::fireEnemiesGuns(const float elapsed)
   m_boss->gun.prepareForNextShot();
 
   const auto xInit    = m_boss->pos(0) - bossDimensions()(0) / 2.0f;
-  const auto y        = m_boss->pos(1) - bossDimensions()(1) / 2.0f;
+  const auto y        = m_boss->pos(1);
   const auto interval = bossDimensions()(0) / BOSS_BULLET_COUNT;
 
   for (auto id = 0; id < BOSS_BULLET_COUNT; ++id)
@@ -209,6 +209,11 @@ void BossLevel::handleCollisions(GameState &state, Effects &effects)
   // Enemies <-> bullets collisions
   for (std::size_t id = 0u; id < m_bullets.size(); ++id)
   {
+    if (m_bullets[id].canDamagePlayer == true)
+    {
+      continue;
+    }
+
     auto bulletRect    = rectFromPositionAndDimensions(m_bullets[id].pos, bulletDimensions());
     bool bulletRemoved = false;
 
