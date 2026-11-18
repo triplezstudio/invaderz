@@ -46,10 +46,9 @@ auto calculateXOffset(const float y, const float xSpeed, const Eigen::Vector3f d
 
 Wave::Wave(const Eigen::Vector3f &worldDims, const float yOffset, const int levelMultiplier)
 {
-  const auto waveSpan = ENEMY_WAVE_PERCENTAGE * worldDims(0);
-  const auto xStart   = (worldDims(0) - waveSpan) / 2.0f;
-  // const auto enemyCount = ENEMY_WAVE_COUNT + (levelMultiplier - 1);
-  const auto enemyCount = ENEMY_WAVE_COUNT + levelMultiplier;
+  const auto waveSpan   = ENEMY_WAVE_PERCENTAGE * worldDims(0);
+  const auto xStart     = (worldDims(0) - waveSpan) / 2.0f;
+  const auto enemyCount = ENEMY_WAVE_COUNT + (levelMultiplier - 1);
   const auto interval   = waveSpan / (enemyCount - 1);
 
   std::random_device rd;
