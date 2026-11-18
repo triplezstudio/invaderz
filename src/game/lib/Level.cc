@@ -229,6 +229,8 @@ void Level::handleCollisions(GameState &state, Effects &effects)
     m_bullets.erase(m_bullets.begin() + id);
   }
 
+  bulletsToRemove.clear();
+
   // Player <-> bullets collisions
   for (std::size_t id = 0u; id < m_bullets.size(); ++id)
   {
