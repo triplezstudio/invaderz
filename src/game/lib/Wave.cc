@@ -13,7 +13,7 @@ constexpr auto OSCILLATION_COUNT = 5;
 // Defines the amplitude of an horizontal oscillation of the enemies in pixels.
 constexpr auto OSCILLATION_AMPLITUDE = 30;
 
-constexpr auto ENEMY_WAVE_COUNT = 15;
+constexpr auto ENEMY_WAVE_COUNT = 5;
 
 // This is the percentage of the width of the screen that the enemy
 // wave spans.
